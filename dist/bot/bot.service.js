@@ -13,8 +13,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BotService = void 0;
 const common_1 = require("@nestjs/common");
 const TelegramBot = require("node-telegram-bot-api");
-const node_process_1 = require("node:process");
-const TELEGRAM_TOKEN = node_process_1.env.TELEGRAM_TOKEN1;
+const TELEGRAM_TOKEN = '6772341762:AAFD7W55yv9i2OMUqnPb8hKOa6X-zXsuvqY';
 let BotService = BotService_1 = class BotService {
     constructor() {
         this.logger = new common_1.Logger(BotService_1.name);
@@ -56,29 +55,29 @@ let BotService = BotService_1 = class BotService {
             }
         };
         this.sendHottestAirdrops = (chatId) => {
-            const message = 'List of hottest airdrops:\n1. Airdrop 1\n2. Airdrop 2\n3. Airdrop 3';
+            const message = 'List of hottest airdrops:\n1. Blast \n2. OKX \n3. Unigrap Protocol';
             this.sendMessageToUser(chatId, message);
-            this.sendAirdropDetails(chatId, 'Airdrop 1', 'Step 1, Step 2', 'Cost: 10 tokens');
-            this.sendAirdropDetails(chatId, 'Airdrop 2', 'Step 3, Step 4', 'Cost: 15 tokens');
-            this.sendAirdropDetails(chatId, 'Airdrop 3', 'Step 5, Step 6', 'Cost: 20 tokens');
+            this.sendAirdropDetails(chatId, '🚀 Blast 🚀', `✅ Confirmed Airdrop from Blast`, 'Cost: 10 tokens');
+            this.sendAirdropDetails(chatId, '🚀 Airdrop 2 🚀', 'Step 3, Step 4', 'Cost: 15 tokens');
+            this.sendAirdropDetails(chatId, '🚀 Airdrop 3 🚀', 'Step 5, Step 6', 'Cost: 20 tokens');
         };
         this.sendAirdropDetails = (chatId, airdropName, steps, cost) => {
-            const detailsMessage = `Details for ${airdropName}:\nSteps: ${steps}\nCost: ${cost}`;
+            const detailsMessage = `${airdropName}:\n\n Steps: ${steps}\nCost: ${cost}`;
             this.sendMessageToUser(chatId, detailsMessage);
         };
         this.sendPotentialAirdrops = (chatId) => {
             const message = 'List of potential airdrops:\n1. Airdrop A\n2. Airdrop B\n3. Airdrop C';
             this.sendMessageToUser(chatId, message);
-            this.sendAirdropDetails(chatId, 'Airdrop A', 'Step 7, Step 8', 'Cost: 25 tokens');
-            this.sendAirdropDetails(chatId, 'Airdrop B', 'Step 9, Step 10', 'Cost: 30 tokens');
-            this.sendAirdropDetails(chatId, 'Airdrop C', 'Step 11, Step 12', 'Cost: 35 tokens');
+            this.sendAirdropDetails(chatId, '🚀 Airdrop A 🚀', 'Step 7, Step 8', 'Cost: 25 tokens');
+            this.sendAirdropDetails(chatId, '🚀 Airdrop B 🚀', 'Step 9, Step 10', 'Cost: 30 tokens');
+            this.sendAirdropDetails(chatId, '🚀 Airdrop C 🚀', 'Step 11, Step 12', 'Cost: 35 tokens');
         };
         this.sendLatestAirdrops = (chatId) => {
             const message = 'List of latest airdrops:\n1. Airdrop X\n2. Airdrop Y\n3. Airdrop Z';
             this.sendMessageToUser(chatId, message);
-            this.sendAirdropDetails(chatId, 'Airdrop X', 'Step 13, Step 14', 'Cost: 40 tokens');
-            this.sendAirdropDetails(chatId, 'Airdrop Y', 'Step 15, Step 16', 'Cost: 45 tokens');
-            this.sendAirdropDetails(chatId, 'Airdrop Z', 'Step 17, Step 18', 'Cost: 50 tokens');
+            this.sendAirdropDetails(chatId, '🚀 Airdrop X 🚀', 'Step 13, Step 14', 'Cost: 40 tokens');
+            this.sendAirdropDetails(chatId, '🚀 Airdrop Y 🚀', 'Step 15, Step 16', 'Cost: 45 tokens');
+            this.sendAirdropDetails(chatId, '🚀 Airdrop Z 🚀', 'Step 17, Step 18', 'Cost: 50 tokens');
         };
         this.bot = new TelegramBot(TELEGRAM_TOKEN, { polling: true });
         this.bot.on('message', this.onReceiveMessage);

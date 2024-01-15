@@ -1,10 +1,9 @@
 // Import necessary modules and dependencies
 import { Injectable, Logger } from '@nestjs/common';
 import * as TelegramBot from 'node-telegram-bot-api';
-import { env } from 'node:process';
 
 // Replace with your actual Telegram Bot token
-const TELEGRAM_TOKEN = env.TELEGRAM_TOKEN1;
+const TELEGRAM_TOKEN = '6772341762:AAFD7W55yv9i2OMUqnPb8hKOa6X-zXsuvqY';
 
 @Injectable()
 export class BotService {
@@ -86,7 +85,7 @@ export class BotService {
     this.sendAirdropDetails(
       chatId,
       '🚀 Blast 🚀',
-      ' →🔵 Step 1, Step 2',
+      `✅ Confirmed Airdrop from Blast`,
       'Cost: 10 tokens',
     );
     this.sendAirdropDetails(
@@ -97,7 +96,7 @@ export class BotService {
     );
     this.sendAirdropDetails(
       chatId,
-      'Airdrop 3',
+      '🚀 Airdrop 3 🚀',
       'Step 5, Step 6',
       'Cost: 20 tokens',
     );
@@ -110,7 +109,7 @@ export class BotService {
     steps: string,
     cost: string,
   ) => {
-    const detailsMessage = `Details for ${airdropName}:\nSteps: ${steps}\nCost: ${cost}`;
+    const detailsMessage = `${airdropName}:\n\n Steps: ${steps}\nCost: ${cost}`;
     this.sendMessageToUser(chatId, detailsMessage);
   };
 
@@ -124,19 +123,19 @@ export class BotService {
     // For each airdrop, send detailed information
     this.sendAirdropDetails(
       chatId,
-      'Airdrop A',
+      '🚀 Airdrop A 🚀',
       'Step 7, Step 8',
       'Cost: 25 tokens',
     );
     this.sendAirdropDetails(
       chatId,
-      'Airdrop B',
+      '🚀 Airdrop B 🚀',
       'Step 9, Step 10',
       'Cost: 30 tokens',
     );
     this.sendAirdropDetails(
       chatId,
-      'Airdrop C',
+      '🚀 Airdrop C 🚀',
       'Step 11, Step 12',
       'Cost: 35 tokens',
     );
@@ -152,19 +151,19 @@ export class BotService {
     // For each airdrop, send detailed information
     this.sendAirdropDetails(
       chatId,
-      'Airdrop X',
+      '🚀 Airdrop X 🚀',
       'Step 13, Step 14',
       'Cost: 40 tokens',
     );
     this.sendAirdropDetails(
       chatId,
-      'Airdrop Y',
+      '🚀 Airdrop Y 🚀',
       'Step 15, Step 16',
       'Cost: 45 tokens',
     );
     this.sendAirdropDetails(
       chatId,
-      'Airdrop Z',
+      '🚀 Airdrop Z 🚀',
       'Step 17, Step 18',
       'Cost: 50 tokens',
     );
