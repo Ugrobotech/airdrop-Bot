@@ -1,9 +1,10 @@
 // Import necessary modules and dependencies
 import { Injectable, Logger } from '@nestjs/common';
 import * as TelegramBot from 'node-telegram-bot-api';
+import { env } from 'node:process';
 
 // Replace with your actual Telegram Bot token
-const TELEGRAM_TOKEN = '6772341762:AAFD7W55yv9i2OMUqnPb8hKOa6X-zXsuvqY';
+const TELEGRAM_TOKEN = env.TELEGRAM_TOKEN1;
 
 @Injectable()
 export class BotService {
@@ -78,19 +79,19 @@ export class BotService {
   sendHottestAirdrops = (chatId: string) => {
     // Implement logic to fetch and send information about the hottest airdrops
     const message =
-      'List of hottest airdrops:\n1. Airdrop 1\n2. Airdrop 2\n3. Airdrop 3';
+      'List of hottest airdrops:\n1. Blast \n2. OKX \n3. Unigrap Protocol';
     this.sendMessageToUser(chatId, message);
 
     // For each airdrop, send detailed information
     this.sendAirdropDetails(
       chatId,
-      'Airdrop 1',
-      'Step 1, Step 2',
+      '🚀 Blast 🚀',
+      ' →🔵 Step 1, Step 2',
       'Cost: 10 tokens',
     );
     this.sendAirdropDetails(
       chatId,
-      'Airdrop 2',
+      '🚀 Airdrop 2 🚀',
       'Step 3, Step 4',
       'Cost: 15 tokens',
     );

@@ -13,7 +13,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BotService = void 0;
 const common_1 = require("@nestjs/common");
 const TelegramBot = require("node-telegram-bot-api");
-const TELEGRAM_TOKEN = '6772341762:AAFD7W55yv9i2OMUqnPb8hKOa6X-zXsuvqY';
+const node_process_1 = require("node:process");
+const TELEGRAM_TOKEN = node_process_1.env.TELEGRAM_TOKEN1;
 let BotService = BotService_1 = class BotService {
     constructor() {
         this.logger = new common_1.Logger(BotService_1.name);
