@@ -1,0 +1,38 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  username   String   @unique
+  first_name String
+  chat_id    Int
+  subscribed Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model AirDrops {
+  id          Int      @id @default(autoincrement())
+  name        String
+  network     String
+  description String
+  category    Category
+  steps       String
+  cost        String
+}
+
+enum Category {
+  LATEST
+  HOTTEST
+  POTENTIAL
+}

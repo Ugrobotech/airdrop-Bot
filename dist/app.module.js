@@ -12,12 +12,14 @@ const config_1 = require("@nestjs/config");
 const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
 const bot_module_1 = require("./bot/bot.module");
+const database_module_1 = require("./database/database.module");
+const admin_module_1 = require("./admin/admin.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [bot_module_1.BotModule, config_1.ConfigModule.forRoot()],
+        imports: [bot_module_1.BotModule, config_1.ConfigModule.forRoot(), database_module_1.DatabaseModule, admin_module_1.AdminModule],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
     })

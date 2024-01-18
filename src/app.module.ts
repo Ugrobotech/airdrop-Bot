@@ -3,9 +3,11 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { BotModule } from './bot/bot.module';
+import { DatabaseModule } from './database/database.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
-  imports: [BotModule, ConfigModule.forRoot()],
+  imports: [BotModule, ConfigModule.forRoot(), DatabaseModule, AdminModule],
   controllers: [AppController],
   providers: [AppService],
 })

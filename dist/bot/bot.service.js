@@ -13,79 +13,241 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BotService = void 0;
 const common_1 = require("@nestjs/common");
 const TelegramBot = require("node-telegram-bot-api");
+const database_service_1 = require("../database/database.service");
+const html_to_text_1 = require("html-to-text");
 const TELEGRAM_TOKEN = '6772341762:AAFD7W55yv9i2OMUqnPb8hKOa6X-zXsuvqY';
 let BotService = BotService_1 = class BotService {
-    constructor() {
+    constructor(databaseService) {
+        this.databaseService = databaseService;
         this.logger = new common_1.Logger(BotService_1.name);
-        this.onReceiveMessage = (msg) => {
+        this.onReceiveMessage = async (msg) => {
             this.logger.debug(msg);
-            const command = msg.text.toLowerCase();
-            if (command === '/start') {
-                this.sendMainMenu(msg.chat.id);
+            try {
+                if (!msg.text) {
+                    this.sendMessageToUser(msg.chat.id, 'Unknown command. Please use\n\n' +
+                        '\t /hottest - View hottest 🔥 airdrops\n' +
+                        '\t /potential - View potential 💡 airdrops\n' +
+                        '\t /latest - View latest 📅 airdrops\n\n' +
+                        '\t /subscribe - Subscribe 🔄 to get notified of the lastest airdrops\n' +
+                        `\t /unsubscribe - ❌ To stop getting notification from me`);
+                }
+                const command = msg.text.toLowerCase();
+                if (command === '/start') {
+                    await this.sendMainMenu(msg.chat.id);
+                    await this.saveToDB({
+                        username: msg.chat.username,
+                        first_name: msg.chat.first_name,
+                        chat_id: msg.chat.id,
+                    });
+                }
+                else {
+                    this.handleAirdropCommands(msg);
+                }
             }
-            else {
-                this.handleAirdropCommands(msg);
+            catch (error) {
+                console.error(error);
             }
         };
-        this.sendMessageToUser = (userId, message) => {
-            this.bot.sendMessage(userId, message);
+        this.sendPictureToUser = async (userId, imageUrl) => {
+            try {
+                return await this.bot.sendPhoto(userId, imageUrl, {
+                    parse_mode: 'HTML',
+                    caption: 'Unknown command. Please use\n\n' +
+                        '\t /hottest - View hottest 🔥 airdrops\n' +
+                        '\t /potential - View potential 💡 airdrops\n' +
+                        '\t /latest - View latest 📅 airdrops\n\n' +
+                        '\t /subscribe - Subscribe 🔄 to get notified of the lastest airdrops\n' +
+                        `\t /unsubscribe - ❌ To stop getting notification from me`,
+                });
+            }
+            catch (error) {
+                console.error(error);
+            }
         };
-        this.sendMainMenu = (chatId) => {
-            const message = 'Welcome! Choose an action:\n' +
-                '/hottest - View hottest airdrops\n' +
-                '/potential - View potential airdrops\n' +
-                '/latest - View latest airdrops';
-            this.sendMessageToUser(chatId, message);
+        this.sendMessageToUser = async (userId, message) => {
+            try {
+                return await this.bot.sendMessage(userId, message, {
+                    parse_mode: 'HTML',
+                });
+            }
+            catch (error) {
+                console.error(error);
+            }
         };
-        this.handleAirdropCommands = (msg) => {
+        this.sendToAllUsers = async (userIds, message) => {
+            try {
+                const sendALL = userIds.map(async (user) => {
+                    return await this.bot.sendMessage(user, message);
+                });
+                return sendALL;
+            }
+            catch (error) {
+                console.error(error);
+            }
+        };
+        this.sendMainMenu = async (chatId) => {
+            try {
+                const message = 'Welcome👋! to AirdropBot @SkyDrip_bot. Choose an action:\n' +
+                    '/hottest - View hottest 🔥 airdrops\n' +
+                    '/potential - View potential 💡 airdrops\n' +
+                    '/latest - View latest 📅 airdrops\n\n' +
+                    '/subscribe - Subscribe 🔄 to get notified of the lastest airdrops\n' +
+                    `/unsubscribe - ❌ To stop getting notification from me`;
+                return await this.sendMessageToUser(chatId, message);
+            }
+            catch (error) {
+                console.error(error);
+            }
+        };
+        this.handleAirdropCommands = async (msg) => {
             const chatId = msg.chat.id;
             const command = msg.text.toLowerCase();
-            switch (command) {
-                case '/hottest':
-                    this.sendHottestAirdrops(chatId);
-                    break;
-                case '/potential':
-                    this.sendPotentialAirdrops(chatId);
-                    break;
-                case '/latest':
-                    this.sendLatestAirdrops(chatId);
-                    break;
-                default:
-                    this.sendMessageToUser(chatId, 'Unknown command. Please use /hottest, /potential, or /latest.');
+            try {
+                switch (command) {
+                    case '/hottest':
+                        const hottest = await this.sendHottestAirdrops(chatId);
+                        if (hottest)
+                            break;
+                    case '/potential':
+                        const potential = await this.sendPotentialAirdrops(chatId);
+                        if (potential)
+                            break;
+                    case '/latest':
+                        const latest = await this.sendLatestAirdrops(chatId);
+                        if (latest)
+                            break;
+                    case '/subscribe':
+                        return await this.sendPictureToUser(chatId, 'https://images.pexels.com/photos/210600/pexels-photo-210600.jpeg?auto=compress&cs=tinysrgb&w=600');
+                        break;
+                    case '/unsubscribe':
+                        const unsubscribed = await this.updateUser(msg.chat.username, {
+                            subscribed: false,
+                        });
+                        if (unsubscribed) {
+                            return await this.sendMessageToUser(chatId, 'You have successfuly unsunscribed from our services');
+                            break;
+                        }
+                        break;
+                    default:
+                        return await this.sendMessageToUser(chatId, 'Unknown command. Please use\n\n' +
+                            '\t /hottest - View hottest 🔥 airdrops\n' +
+                            '\t /potential - View potential 💡 airdrops\n' +
+                            '\t /latest - View latest 📅 airdrops\n\n' +
+                            '\t /subscribe - Subscribe 🔄 to get notified of the lastest airdrops\n' +
+                            `\t /unsubscribe - ❌ To stop getting notification from me`);
+                }
+            }
+            catch (error) {
+                console.error(error);
             }
         };
-        this.sendHottestAirdrops = (chatId) => {
-            const message = 'List of hottest airdrops:\n1. Blast \n2. OKX \n3. Unigrap Protocol';
-            this.sendMessageToUser(chatId, message);
-            this.sendAirdropDetails(chatId, '🚀 Blast 🚀', `✅ Confirmed Airdrop from Blast`, 'Cost: 10 tokens');
-            this.sendAirdropDetails(chatId, '🚀 Airdrop 2 🚀', 'Step 3, Step 4', 'Cost: 15 tokens');
-            this.sendAirdropDetails(chatId, '🚀 Airdrop 3 🚀', 'Step 5, Step 6', 'Cost: 20 tokens');
+        this.sendAirdropDetails = async (chatId, airdropName, network, details, category, steps, cost) => {
+            try {
+                const detailsMessage = `${airdropName}\n\n
+    ${network}.\n${details}.\n\n\t${steps}\n\n\tCost: ${cost}`;
+                return await this.sendMessageToUser(chatId, detailsMessage);
+            }
+            catch (error) {
+                console.error(error);
+            }
         };
-        this.sendAirdropDetails = (chatId, airdropName, steps, cost) => {
-            const detailsMessage = `${airdropName}:\n\n Steps: ${steps}\nCost: ${cost}`;
-            this.sendMessageToUser(chatId, detailsMessage);
+        this.sendHottestAirdrops = async (chatId) => {
+            try {
+                const message = await this.sendMessageToUser(chatId, '🔥 Hottest Airdrops 👇');
+                if (message) {
+                    const hottestAirDrops = await this.fetchAirdrops('HOTTEST');
+                    const hotDrops = hottestAirDrops.map(async (airdrop) => {
+                        const options = {
+                            wordwrap: 130,
+                        };
+                        const ConvertedText = (0, html_to_text_1.convert)(airdrop.description, options);
+                        return await this.sendAirdropDetails(chatId, airdrop.name, airdrop.network, ConvertedText, airdrop.category, airdrop.steps, airdrop.cost);
+                    });
+                    return hotDrops;
+                }
+                return;
+            }
+            catch (error) {
+                console.error(error);
+            }
         };
-        this.sendPotentialAirdrops = (chatId) => {
-            const message = 'List of potential airdrops:\n1. Airdrop A\n2. Airdrop B\n3. Airdrop C';
-            this.sendMessageToUser(chatId, message);
-            this.sendAirdropDetails(chatId, '🚀 Airdrop A 🚀', 'Step 7, Step 8', 'Cost: 25 tokens');
-            this.sendAirdropDetails(chatId, '🚀 Airdrop B 🚀', 'Step 9, Step 10', 'Cost: 30 tokens');
-            this.sendAirdropDetails(chatId, '🚀 Airdrop C 🚀', 'Step 11, Step 12', 'Cost: 35 tokens');
+        this.sendPotentialAirdrops = async (chatId) => {
+            try {
+                const message = await this.sendMessageToUser(chatId, '💡 Potential Airdrops 👇');
+                if (message) {
+                    const potentialAirDrops = await this.fetchAirdrops('POTENTIAL');
+                    const potDrops = potentialAirDrops.map(async (airdrop) => {
+                        const options = {
+                            wordwrap: 130,
+                        };
+                        const ConvertedText = (0, html_to_text_1.convert)(airdrop.description, options);
+                        return await this.sendAirdropDetails(chatId, airdrop.name, airdrop.network, ConvertedText, airdrop.category, airdrop.steps, airdrop.cost);
+                    });
+                    return potDrops;
+                }
+                return;
+            }
+            catch (error) {
+                console.error(error);
+            }
         };
-        this.sendLatestAirdrops = (chatId) => {
-            const message = 'List of latest airdrops:\n1. Airdrop X\n2. Airdrop Y\n3. Airdrop Z';
-            this.sendMessageToUser(chatId, message);
-            this.sendAirdropDetails(chatId, '🚀 Airdrop X 🚀', 'Step 13, Step 14', 'Cost: 40 tokens');
-            this.sendAirdropDetails(chatId, '🚀 Airdrop Y 🚀', 'Step 15, Step 16', 'Cost: 45 tokens');
-            this.sendAirdropDetails(chatId, '🚀 Airdrop Z 🚀', 'Step 17, Step 18', 'Cost: 50 tokens');
+        this.sendLatestAirdrops = async (chatId) => {
+            try {
+                const message = await this.sendMessageToUser(chatId, '📅 Latest Airdrops 👇');
+                if (message) {
+                    const latestAirDrops = await this.fetchAirdrops('LATEST');
+                    const latestDrops = latestAirDrops.map(async (airdrop) => {
+                        const options = {
+                            wordwrap: 130,
+                        };
+                        const ConvertedText = (0, html_to_text_1.convert)(airdrop.description, options);
+                        return await this.sendAirdropDetails(chatId, airdrop.name, airdrop.network, ConvertedText, airdrop.category, airdrop.steps, airdrop.cost);
+                    });
+                    return latestDrops;
+                }
+                return;
+            }
+            catch (error) {
+                console.error(error);
+            }
         };
         this.bot = new TelegramBot(TELEGRAM_TOKEN, { polling: true });
         this.bot.on('message', this.onReceiveMessage);
+    }
+    async saveToDB(saveUserDto) {
+        try {
+            const isSaved = await this.databaseService.user.findFirst({
+                where: { username: saveUserDto.username },
+            });
+            if (!isSaved) {
+                return this.databaseService.user.create({ data: saveUserDto });
+            }
+            return;
+        }
+        catch (error) {
+            console.error(error);
+        }
+    }
+    async updateUser(username, updateUserDto) {
+        return await this.databaseService.user.update({
+            where: { username },
+            data: updateUserDto,
+        });
+    }
+    async fetchAirdrops(category) {
+        try {
+            return await this.databaseService.airDrops.findMany({
+                where: { category },
+            });
+        }
+        catch (error) {
+            console.error(error);
+        }
     }
 };
 exports.BotService = BotService;
 exports.BotService = BotService = BotService_1 = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [database_service_1.DatabaseService])
 ], BotService);
 //# sourceMappingURL=bot.service.js.map
