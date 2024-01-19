@@ -46,7 +46,6 @@ export class BotService {
     const replyMarkup = {
       inline_keyboard: keyboard,
     };
-
     // Parse incoming message and handle commands
     try {
       // this checks for messages that are not text
@@ -227,6 +226,7 @@ export class BotService {
     // Set up the keyboard markup
     const replyMarkup = {
       inline_keyboard: keyboard,
+      force_reply: true,
     };
     try {
       const welcome = await this.sendPictureToUser(
