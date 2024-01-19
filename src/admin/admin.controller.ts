@@ -9,11 +9,15 @@ import {
   Get,
 } from '@nestjs/common';
 import { AdminService } from './admin.service';
+import { BotService } from 'src/bot/bot.service';
 import { Prisma } from '@prisma/client';
 
 @Controller('admin')
 export class AdminController {
-  constructor(private readonly adminService: AdminService) {}
+  constructor(
+    private readonly adminService: AdminService,
+    private readonly botService: BotService,
+  ) {}
 
   @Post()
   async createAirdrop(@Body() createAirdropDto: Prisma.AirDropsCreateInput) {
@@ -37,6 +41,10 @@ export class AdminController {
     @Query('category') category?: 'LATEST' | 'HOTTEST' | 'POTENTIAL',
   ) {
     return this.adminService.findAll(category);
+  }
+  @Get(':id')
+  async notifyAll(@Param('id') id: string) {
+    return this.botService.notifyAllUsers(+id);
   }
   @Get('users')
   async getAllUsers() {

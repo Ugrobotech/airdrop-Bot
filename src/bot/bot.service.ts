@@ -22,31 +22,58 @@ export class BotService {
 
     // Register event listener for incoming messages
     this.bot.on('message', this.onReceiveMessage);
+    // Register event listener for incoming button commands
+    this.bot.on('callback_query', this.handleButtonCommands);
   }
 
   // Event handler for incoming messages
   onReceiveMessage = async (msg: any) => {
     this.logger.debug(msg);
+    // Create inline keyboard with buttons
+    const keyboard = [
+      [
+        { text: 'Hottest 🔥', callback_data: '/hottest' },
+        { text: 'Potential 💡', callback_data: '/potential' },
+        { text: 'Latest 📅', callback_data: '/latest' },
+      ],
+      [
+        { text: 'Subscribe 🔄', callback_data: 'subscribe' },
+        { text: 'Unsubscribe ❌', callback_data: 'unsubscribe' },
+      ],
+    ];
+
+    // Set up the keyboard markup
+    const replyMarkup = {
+      inline_keyboard: keyboard,
+    };
 
     // Parse incoming message and handle commands
-
     try {
+      // this checks for messages that are not text
       if (!msg.text) {
-        // this checks for messages that are not text
-        this.sendMessageToUser(
+        // Send a message with the inline keyboard
+        this.bot.sendMessage(
           msg.chat.id,
-          'Unknown command. Please use\n\n' +
-            '\t /hottest - View hottest 🔥 airdrops\n' +
-            '\t /potential - View potential 💡 airdrops\n' +
-            '\t /latest - View latest 📅 airdrops\n\n' +
-            '\t /subscribe - Subscribe 🔄 to get notified of the lastest airdrops\n' +
-            `\t /unsubscribe - ❌ To stop getting notification from me`,
+          'Invalid command, please Choose an option:',
+          {
+            reply_markup: replyMarkup,
+          },
         );
+        // this.sendMessageToUser(
+        //   msg.chat.id,
+        //   'Unknown command. Please use\n\n' +
+        //     '\t /hottest - View hottest 🔥 airdrops\n' +
+        //     '\t /potential - View potential 💡 airdrops\n' +
+        //     '\t /latest - View latest 📅 airdrops\n\n' +
+        //     '\t /subscribe - Subscribe 🔄 to get notified of the lastest airdrops\n' +
+        //     `\t /unsubscribe - ❌ To stop getting notification from me`,
+        // );
       }
       const command = msg.text.toLowerCase();
       if (command === '/start') {
         // Send a menu of available actions
-        await this.sendMainMenu(msg.chat.id);
+        await this.sendWelcomeMenu(msg.chat.id);
+        // await this.sendMainMenu(msg.chat.id);
         await this.saveToDB({
           username: msg.chat.username,
           first_name: msg.chat.first_name,
@@ -93,17 +120,15 @@ export class BotService {
     }
   }
   // Method to send a picture message to a specific user
-  sendPictureToUser = async (userId: string, imageUrl: string) => {
+  sendPictureToUser = async (
+    userId: string,
+    imageUrl: string,
+    message: string,
+  ) => {
     try {
       return await this.bot.sendPhoto(userId, imageUrl, {
         parse_mode: 'HTML',
-        caption:
-          'Unknown command. Please use\n\n' +
-          '\t /hottest - View hottest 🔥 airdrops\n' +
-          '\t /potential - View potential 💡 airdrops\n' +
-          '\t /latest - View latest 📅 airdrops\n\n' +
-          '\t /subscribe - Subscribe 🔄 to get notified of the lastest airdrops\n' +
-          `\t /unsubscribe - ❌ To stop getting notification from me`,
+        caption: message,
       });
     } catch (error) {
       console.error(error);
@@ -122,12 +147,33 @@ export class BotService {
   };
 
   // Method to send a broadcast massage to all users
-  sendToAllUsers = async (userIds: string[], message: string) => {
+  notifyAllUsers = async (messageId: number) => {
     try {
-      const sendALL = userIds.map(async (user) => {
-        return await this.bot.sendMessage(user, message);
+      const users = await this.databaseService.user.findMany();
+      const message = await this.databaseService.airDrops.findFirst({
+        where: { id: messageId },
       });
-      return sendALL;
+      if (users && message) {
+        const sendALL = users.map(async (user) => {
+          const options = {
+            wordwrap: 130,
+            // ...
+          };
+          const ConvertedText = convert(message.description, options);
+
+          return await this.sendAirdropDetails(
+            user.chat_id.toString(),
+            message.imageUrl,
+            message.name,
+            message.network,
+            ConvertedText,
+            message.category,
+            message.steps,
+            message.cost,
+          );
+        });
+        return sendALL;
+      }
     } catch (error) {
       console.error(error);
     }
@@ -135,15 +181,66 @@ export class BotService {
 
   // Method to send the main menu of available actions
   sendMainMenu = async (chatId: string) => {
+    // Create inline keyboard with buttons
+    const keyboard = [
+      [
+        { text: 'Hottest 🔥', callback_data: 'hottest' },
+        { text: 'Potential 💡', callback_data: 'potential' },
+        { text: 'Latest 📅', callback_data: 'latest' },
+      ],
+      [
+        { text: 'Subscribe 🔄', callback_data: 'subscribe' },
+        { text: 'Unsubscribe ❌', callback_data: 'unsubscribe' },
+      ],
+    ];
+
+    // Set up the keyboard markup
+    const replyMarkup = {
+      inline_keyboard: keyboard,
+    };
     try {
-      const message =
-        'Welcome👋! to AirdropBot @SkyDrip_bot. Choose an action:\n' +
-        '/hottest - View hottest 🔥 airdrops\n' +
-        '/potential - View potential 💡 airdrops\n' +
-        '/latest - View latest 📅 airdrops\n\n' +
-        '/subscribe - Subscribe 🔄 to get notified of the lastest airdrops\n' +
-        `/unsubscribe - ❌ To stop getting notification from me`;
-      return await this.sendMessageToUser(chatId, message);
+      const welcome = await this.sendPictureToUser(
+        chatId,
+        'https://images.pexels.com/photos/210600/pexels-photo-210600.jpeg?auto=compress&cs=tinysrgb&w=600',
+        'Welcome👋! to AirdropScanBot @SkyDrip_bot.',
+      );
+      if (welcome) {
+        return this.bot.sendMessage(chatId, ' Choose an option:', {
+          reply_markup: replyMarkup,
+        });
+      }
+
+      // await this.sendMessageToUser(chatId, message);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // function to for initial command of the bot
+  sendWelcomeMenu = async (chatId: string) => {
+    // Create inline keyboard with buttons
+    const keyboard = [
+      [{ text: 'Subscribe 🔄', callback_data: '/subscribe' }],
+      [{ text: 'Join channel 💬', callback_data: '/channel' }],
+    ];
+
+    // Set up the keyboard markup
+    const replyMarkup = {
+      inline_keyboard: keyboard,
+    };
+    try {
+      const welcome = await this.sendPictureToUser(
+        chatId,
+        'https://images.pexels.com/photos/210600/pexels-photo-210600.jpeg?auto=compress&cs=tinysrgb&w=600',
+        'Welcome👋! to AirdropScanBot @SkyDrip_bot.',
+      );
+      if (welcome) {
+        return this.bot.sendMessage(chatId, ' Choose an option:', {
+          reply_markup: replyMarkup,
+        });
+      }
+
+      // await this.sendMessageToUser(chatId, message);
     } catch (error) {
       console.error(error);
     }
@@ -179,6 +276,7 @@ export class BotService {
           return await this.sendPictureToUser(
             chatId,
             'https://images.pexels.com/photos/210600/pexels-photo-210600.jpeg?auto=compress&cs=tinysrgb&w=600',
+            'picture',
           );
           break;
         case '/unsubscribe':
@@ -212,9 +310,76 @@ export class BotService {
     }
   };
 
+  // Method to handle airdrop commands
+  handleButtonCommands = async (query: any) => {
+    // console.log(query.message.chat.id);
+    const chatId = query.message.chat.id;
+    const command = query.data;
+    console.log(command);
+    try {
+      switch (command) {
+        case '/hottest':
+          const hottest = await this.sendHottestAirdrops(chatId);
+          if (hottest) break;
+        case '/potential':
+          const potential = await this.sendPotentialAirdrops(chatId);
+          if (potential) break;
+        case '/latest':
+          const latest = await this.sendLatestAirdrops(chatId);
+          if (latest) break;
+        case '/subscribe':
+          // const suscribed = await this.updateUser(msg.chat.username, {
+          //   subscribed: true,
+          // });
+          // if (suscribed) {
+          //   return await this.sendMessageToUser(
+          //     chatId,
+          //     'you have successfully subscribed to our services',
+          //   );
+
+          //   break;
+          // }
+          return await this.sendPictureToUser(
+            chatId,
+            'https://images.pexels.com/photos/210600/pexels-photo-210600.jpeg?auto=compress&cs=tinysrgb&w=600',
+            'picture',
+          );
+          break;
+        case '/unsubscribe':
+          const unsubscribed = await this.updateUser(query.msg.chat.username, {
+            subscribed: false,
+          });
+          if (unsubscribed) {
+            return await this.sendMessageToUser(
+              chatId,
+              'You have successfuly unsunscribed from our services',
+            );
+            break;
+          }
+          break;
+
+        // Add more cases for other airdrop categories as needed
+        default:
+          // Handle unknown commands or provide instructions
+          return await this.sendMessageToUser(
+            chatId,
+            'Unknown command. Please use\n\n' +
+              '\t /hottest - View hottest 🔥 airdrops\n' +
+              '\t /potential - View potential 💡 airdrops\n' +
+              '\t /latest - View latest 📅 airdrops\n\n' +
+              '\t /subscribe - Subscribe 🔄 to get notified of the lastest airdrops\n' +
+              `\t /unsubscribe - ❌ To stop getting notification from me`,
+          );
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   // Method to send detailed information about a specific airdrop
   sendAirdropDetails = async (
     chatId: string,
+    imageUrl: string,
     airdropName: string,
     network?: string,
     details?: string,
@@ -225,7 +390,7 @@ export class BotService {
     try {
       const detailsMessage = `${airdropName}\n\n
     ${network}.\n${details}.\n\n\t${steps}\n\n\tCost: ${cost}`;
-      return await this.sendMessageToUser(chatId, detailsMessage);
+      return await this.sendPictureToUser(chatId, imageUrl, detailsMessage);
     } catch (error) {
       console.error(error);
     }
@@ -250,6 +415,7 @@ export class BotService {
 
           return await this.sendAirdropDetails(
             chatId,
+            airdrop.imageUrl,
             airdrop.name,
             airdrop.network,
             ConvertedText,
@@ -283,6 +449,7 @@ export class BotService {
           const ConvertedText = convert(airdrop.description, options);
           return await this.sendAirdropDetails(
             chatId,
+            airdrop.imageUrl,
             airdrop.name,
             airdrop.network,
             ConvertedText,
@@ -318,6 +485,7 @@ export class BotService {
           const ConvertedText = convert(airdrop.description, options);
           return await this.sendAirdropDetails(
             chatId,
+            airdrop.imageUrl,
             airdrop.name,
             airdrop.network,
             ConvertedText,

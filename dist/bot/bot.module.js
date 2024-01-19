@@ -17,6 +17,7 @@ exports.BotModule = BotModule = __decorate([
     (0, common_1.Module)({
         imports: [database_module_1.DatabaseModule],
         providers: [bot_service_1.BotService],
+        exports: [bot_service_1.BotService],
     })
 ], BotModule);
 //# sourceMappingURL=bot.module.js.map

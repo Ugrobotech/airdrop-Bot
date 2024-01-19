@@ -15,10 +15,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AdminController = void 0;
 const common_1 = require("@nestjs/common");
 const admin_service_1 = require("./admin.service");
+const bot_service_1 = require("../bot/bot.service");
 const client_1 = require("@prisma/client");
 let AdminController = class AdminController {
-    constructor(adminService) {
+    constructor(adminService, botService) {
         this.adminService = adminService;
+        this.botService = botService;
     }
     async createAirdrop(createAirdropDto) {
         return this.adminService.createAirdrop(createAirdropDto);
@@ -31,6 +33,9 @@ let AdminController = class AdminController {
     }
     async findAll(category) {
         return this.adminService.findAll(category);
+    }
+    async notifyAll(id) {
+        return this.botService.notifyAllUsers(+id);
     }
     async getAllUsers() {
         return await this.adminService.getAllUsers();
@@ -70,6 +75,13 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AdminController.prototype, "findAll", null);
 __decorate([
+    (0, common_1.Get)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], AdminController.prototype, "notifyAll", null);
+__decorate([
     (0, common_1.Get)('users'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
@@ -83,6 +95,7 @@ __decorate([
 ], AdminController.prototype, "getAllSubUsers", null);
 exports.AdminController = AdminController = __decorate([
     (0, common_1.Controller)('admin'),
-    __metadata("design:paramtypes", [admin_service_1.AdminService])
+    __metadata("design:paramtypes", [admin_service_1.AdminService,
+        bot_service_1.BotService])
 ], AdminController);
 //# sourceMappingURL=admin.controller.js.map

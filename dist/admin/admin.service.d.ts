@@ -11,6 +11,7 @@ export declare class AdminService {
         category: import(".prisma/client").$Enums.Category;
         steps: string;
         cost: string;
+        imageUrl: string;
     }>;
     update(id: number, updateAirdropDto: Prisma.AirDropsUpdateInput): Promise<{
         id: number;
@@ -20,6 +21,7 @@ export declare class AdminService {
         category: import(".prisma/client").$Enums.Category;
         steps: string;
         cost: string;
+        imageUrl: string;
     }>;
     delete(id: number): Promise<{
         id: number;
@@ -29,6 +31,7 @@ export declare class AdminService {
         category: import(".prisma/client").$Enums.Category;
         steps: string;
         cost: string;
+        imageUrl: string;
     }>;
     findAll(category?: 'LATEST' | 'HOTTEST' | 'POTENTIAL'): Promise<{
         id: number;
@@ -38,6 +41,7 @@ export declare class AdminService {
         category: import(".prisma/client").$Enums.Category;
         steps: string;
         cost: string;
+        imageUrl: string;
     }[]>;
     getSubUserCount(): Promise<number>;
     getAllUsers(): Promise<number>;

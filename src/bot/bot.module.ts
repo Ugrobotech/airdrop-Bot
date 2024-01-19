@@ -7,5 +7,6 @@ import { DatabaseModule } from 'src/database/database.module';
   // controllers: [BotController],
   imports: [DatabaseModule],
   providers: [BotService],
+  exports: [BotService],
 })
 export class BotModule {}
