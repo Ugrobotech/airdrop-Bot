@@ -35,7 +35,7 @@ export declare class BotService {
         cost: string;
         imageUrl: string;
     }[]>;
-    sendPictureToUser: (userId: string, imageUrl: string, message: string) => Promise<TelegramBot.Message>;
+    sendPictureToUser: (userId: string, imageUrl: string, message: string, markup?: TelegramBot.InlineKeyboardMarkup) => Promise<TelegramBot.Message>;
     sendMessageToUser: (userId: string, message: string) => Promise<TelegramBot.Message>;
     notifyAllUsers: (messageId: number) => Promise<Promise<TelegramBot.Message>[]>;
     sendMainMenu: (chatId: string) => Promise<TelegramBot.Message>;

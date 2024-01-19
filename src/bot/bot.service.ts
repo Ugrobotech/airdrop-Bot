@@ -123,11 +123,13 @@ export class BotService {
     userId: string,
     imageUrl: string,
     message: string,
+    markup?: TelegramBot.InlineKeyboardMarkup,
   ) => {
     try {
       return await this.bot.sendPhoto(userId, imageUrl, {
         parse_mode: 'HTML',
         caption: message,
+        reply_markup: markup,
       });
     } catch (error) {
       console.error(error);
@@ -220,7 +222,12 @@ export class BotService {
     // Create inline keyboard with buttons
     const keyboard = [
       [{ text: 'Subscribe 🔄', callback_data: '/subscribe' }],
-      [{ text: 'Join channel 💬', callback_data: '/channel' }],
+      [
+        {
+          text: 'Join channel 💬',
+          callback_data: '/chanel',
+        },
+      ],
     ];
 
     // Set up the keyboard markup
@@ -229,16 +236,12 @@ export class BotService {
       force_reply: true,
     };
     try {
-      const welcome = await this.sendPictureToUser(
+      return await this.sendPictureToUser(
         chatId,
         'https://images.pexels.com/photos/210600/pexels-photo-210600.jpeg?auto=compress&cs=tinysrgb&w=600',
         'Welcome👋! to AirdropScanBot @SkyDrip_bot.',
+        replyMarkup,
       );
-      if (welcome) {
-        return this.bot.sendMessage(chatId, ' Choose an option:', {
-          reply_markup: replyMarkup,
-        });
-      }
 
       // await this.sendMessageToUser(chatId, message);
     } catch (error) {
