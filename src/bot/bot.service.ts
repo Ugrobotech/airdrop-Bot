@@ -295,16 +295,29 @@ export class BotService {
     const replyMarkup = {
       inline_keyboard: keyboard,
     };
+    console.log('I am here');
     try {
       const groupId = -1002116374739;
       const user_Id = userId;
+      let isMember: boolean;
       // Check if the user is a member of the group
-      const isMember = await this.bot.getChatMember(groupId, user_Id);
+      // const isMember = await this.bot.getChatMember(groupId, user_Id);
+      this.bot
+        .getChatMember(groupId, user_Id)
+        .then(() => {
+          isMember = true;
+        })
+        .catch((e) => {
+          if (e.response.body.error_code == 400) {
+            isMember = false;
+          }
+        });
+      // console.log('this is a memeber :', isMember);
       const isSubbed = await this.databaseService.user.findFirst({
-        where: { chat_id: +chatId, subscribed: true },
+        where: { chat_id: +chatId },
       });
 
-      if (isMember && isSubbed) {
+      if (isSubbed.subscribed && isMember) {
         return this.sendMainMenu(userId.toString());
       }
       return await this.bot.sendMessage(
