@@ -69,6 +69,7 @@ export class BotService {
         // );
       }
       const command = msg.text.toLowerCase();
+      console.log('command :', command);
       if (command === '/start') {
         // Send a menu of available actions
         await this.sendWelcomeMenu(msg.chat.id);
@@ -200,16 +201,13 @@ export class BotService {
       inline_keyboard: keyboard,
     };
     try {
-      const welcome = await this.sendPictureToUser(
+      return this.bot.sendMessage(
         chatId,
-        'https://images.pexels.com/photos/210600/pexels-photo-210600.jpeg?auto=compress&cs=tinysrgb&w=600',
-        'Welcome👋! to AirdropScanBot @SkyDrip_bot.',
-      );
-      if (welcome) {
-        return this.bot.sendMessage(chatId, ' Choose an option:', {
+        ' 📝 To utilize the airdrop scanning feature, kindly subscribe to our Telegram channel and enable notification services.:',
+        {
           reply_markup: replyMarkup,
-        });
-      }
+        },
+      );
 
       // await this.sendMessageToUser(chatId, message);
     } catch (error) {
@@ -219,33 +217,105 @@ export class BotService {
 
   // function to for initial command of the bot
   sendWelcomeMenu = async (chatId: string) => {
-    // Create inline keyboard with buttons
     const keyboard = [
-      [{ text: 'Subscribe 🔄', callback_data: '/subscribe' }],
       [
         {
-          text: 'Join channel 💬',
-          callback_data: '/chanel',
+          text: 'Get started with me 🚀',
+          callback_data: '/getstarted',
         },
       ],
     ];
 
     // Set up the keyboard markup
+    //force_reply: true,
     const replyMarkup = {
       inline_keyboard: keyboard,
-      force_reply: true,
     };
     try {
       return await this.sendPictureToUser(
         chatId,
         'https://images.pexels.com/photos/210600/pexels-photo-210600.jpeg?auto=compress&cs=tinysrgb&w=600',
-        'Welcome👋! to AirdropScanBot @SkyDrip_bot.',
+        'Welcome👋! to AirdropScanBot @SkyDrip_bot, your go-to airdrop scanner! 🚀',
         replyMarkup,
       );
 
       // await this.sendMessageToUser(chatId, message);
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  // function for menu
+  sendMenu = async (chatId: string) => {
+    // Create inline keyboard with buttons
+    const keyboard = [
+      [
+        {
+          text: 'Join channel 💬',
+          url: 'https://t.me/CryptoJamil',
+        },
+      ],
+      [{ text: 'Enable Notification 🔔', callback_data: '/subscribe' }],
+      [{ text: `Done ? 👍`, callback_data: '/done' }],
+    ];
+
+    // Set up the keyboard markup
+    //force_reply: true,
+    const replyMarkup = {
+      inline_keyboard: keyboard,
+    };
+    try {
+      return await this.bot.sendMessage(
+        chatId,
+        ' 📝 To utilize the airdrop scanning feature, kindly subscribe to our Telegram channel and enable notification services.:',
+        { reply_markup: replyMarkup },
+      );
+
+      // await this.sendMessageToUser(chatId, message);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // function to check if a user have succefully suscribed and joined the group
+  checkDone = async (chatId: string, userId: number) => {
+    // Create inline keyboard with buttons
+    const keyboard = [
+      [
+        {
+          text: 'Join channel 💬',
+          url: 'https://t.me/CryptoJamil',
+        },
+      ],
+      [{ text: 'Enable Notification 🔔', callback_data: '/subscribe' }],
+      [{ text: `Done ? 👍`, callback_data: '/done' }],
+    ];
+
+    // Set up the keyboard markup
+    const replyMarkup = {
+      inline_keyboard: keyboard,
+    };
+    try {
+      const groupId = -1002116374739;
+      const user_Id = userId;
+      // Check if the user is a member of the group
+      const isMember = await this.bot.getChatMember(groupId, user_Id);
+      const isSubbed = await this.databaseService.user.findFirst({
+        where: { chat_id: +chatId, subscribed: true },
+      });
+
+      if (isMember && isSubbed) {
+        return this.sendMainMenu(userId.toString());
+      }
+      return await this.bot.sendMessage(
+        chatId,
+        ' 🚨 You need to subscribe to our channel and turn on your notification:',
+        {
+          reply_markup: replyMarkup,
+        },
+      );
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -265,22 +335,18 @@ export class BotService {
           const latest = await this.sendLatestAirdrops(chatId);
           if (latest) break;
         case '/subscribe':
-          // const suscribed = await this.updateUser(msg.chat.username, {
-          //   subscribed: true,
-          // });
-          // if (suscribed) {
-          //   return await this.sendMessageToUser(
-          //     chatId,
-          //     'you have successfully subscribed to our services',
-          //   );
+          const suscribed = await this.updateUser(msg.chat.username, {
+            subscribed: true,
+          });
+          if (suscribed) {
+            return await this.sendMessageToUser(
+              chatId,
+              'you have successfully subscribed to our services',
+            );
 
-          //   break;
-          // }
-          return await this.sendPictureToUser(
-            chatId,
-            'https://images.pexels.com/photos/210600/pexels-photo-210600.jpeg?auto=compress&cs=tinysrgb&w=600',
-            'picture',
-          );
+            break;
+          }
+
           break;
         case '/unsubscribe':
           const unsubscribed = await this.updateUser(msg.chat.username, {
@@ -318,9 +384,17 @@ export class BotService {
     // console.log(query.message.chat.id);
     const chatId = query.message.chat.id;
     const command = query.data;
-    console.log(command);
+    const userId = query.message.from.id;
+    console.log(query);
+    console.log(userId, chatId);
     try {
       switch (command) {
+        case '/getstarted':
+          const started = await this.sendMenu(chatId);
+          if (started) break;
+        case '/done':
+          const done = await this.checkDone(chatId, userId);
+          if (done) break;
         case '/hottest':
           const hottest = await this.sendHottestAirdrops(chatId);
           if (hottest) break;
@@ -331,22 +405,16 @@ export class BotService {
           const latest = await this.sendLatestAirdrops(chatId);
           if (latest) break;
         case '/subscribe':
-          // const suscribed = await this.updateUser(msg.chat.username, {
-          //   subscribed: true,
-          // });
-          // if (suscribed) {
-          //   return await this.sendMessageToUser(
-          //     chatId,
-          //     'you have successfully subscribed to our services',
-          //   );
+          const suscribed = await this.updateUser(query.message.chat.username, {
+            subscribed: true,
+          });
+          if (suscribed) {
+            return await this.sendMessageToUser(
+              chatId,
+              'you have successfully subscribed to our services',
+            );
+          }
 
-          //   break;
-          // }
-          return await this.sendPictureToUser(
-            chatId,
-            'https://images.pexels.com/photos/210600/pexels-photo-210600.jpeg?auto=compress&cs=tinysrgb&w=600',
-            'picture',
-          );
           break;
         case '/unsubscribe':
           const unsubscribed = await this.updateUser(query.msg.chat.username, {

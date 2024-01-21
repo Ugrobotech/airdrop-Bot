@@ -40,6 +40,8 @@ export declare class BotService {
     notifyAllUsers: (messageId: number) => Promise<Promise<TelegramBot.Message>[]>;
     sendMainMenu: (chatId: string) => Promise<TelegramBot.Message>;
     sendWelcomeMenu: (chatId: string) => Promise<TelegramBot.Message>;
+    sendMenu: (chatId: string) => Promise<TelegramBot.Message>;
+    checkDone: (chatId: string, userId: number) => Promise<TelegramBot.Message>;
     handleAirdropCommands: (msg: any) => Promise<TelegramBot.Message>;
     handleButtonCommands: (query: any) => Promise<TelegramBot.Message>;
     sendAirdropDetails: (chatId: string, imageUrl: string, airdropName: string, network?: string, details?: string, category?: string, steps?: string, cost?: string) => Promise<TelegramBot.Message>;
