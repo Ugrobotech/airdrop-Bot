@@ -294,7 +294,7 @@ export class BotService {
     try {
       //-1002136597023
       //-1002116374739 cryptoJamil
-      const groupId = -1002136597023;
+      const groupId = -1002116374739;
       const user_Id = userId;
       console.log('user id :', user_Id);
       const chat_Id = +chatId;
