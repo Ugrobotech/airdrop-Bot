@@ -11,7 +11,7 @@ export declare class BotService {
         id: number;
         username: string;
         first_name: string;
-        chat_id: number;
+        chat_id: bigint;
         subscribed: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -20,7 +20,7 @@ export declare class BotService {
         id: number;
         username: string;
         first_name: string;
-        chat_id: number;
+        chat_id: bigint;
         subscribed: boolean;
         createdAt: Date;
         updatedAt: Date;

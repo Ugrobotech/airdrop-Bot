@@ -71,13 +71,14 @@ export class BotService {
       const command = msg.text.toLowerCase();
       console.log('command :', command);
       if (command === '/start') {
+        const chat_Id = +msg.chat.id;
         // Send a menu of available actions
         await this.sendWelcomeMenu(msg.chat.id);
         // await this.sendMainMenu(msg.chat.id);
         await this.saveToDB({
           username: msg.chat.username,
           first_name: msg.chat.first_name,
-          chat_id: msg.chat.id,
+          chat_id: chat_Id,
         });
       } else {
         // Handle other commands
@@ -185,15 +186,9 @@ export class BotService {
   sendMainMenu = async (chatId: string) => {
     // Create inline keyboard with buttons
     const keyboard = [
-      [
-        { text: 'Hottest 🔥', callback_data: 'hottest' },
-        { text: 'Potential 💡', callback_data: 'potential' },
-        { text: 'Latest 📅', callback_data: 'latest' },
-      ],
-      [
-        { text: 'Subscribe 🔄', callback_data: 'subscribe' },
-        { text: 'Unsubscribe ❌', callback_data: 'unsubscribe' },
-      ],
+      [{ text: 'Hottest 🔥 Airdrops', callback_data: '/hottest' }],
+      [{ text: 'Potential 💡 Airdrops', callback_data: '/potential' }],
+      [{ text: 'Latest  📅  Airdrops', callback_data: '/latest' }],
     ];
 
     // Set up the keyboard markup
@@ -203,7 +198,7 @@ export class BotService {
     try {
       return this.bot.sendMessage(
         chatId,
-        ' 📝 To utilize the airdrop scanning feature, kindly subscribe to our Telegram channel and enable notification services.:',
+        '👍 Use the commands below to scan through Airdrops:',
         {
           reply_markup: replyMarkup,
         },
@@ -256,7 +251,7 @@ export class BotService {
         },
       ],
       [{ text: 'Enable Notification 🔔', callback_data: '/subscribe' }],
-      [{ text: `Done ? 👍`, callback_data: '/done' }],
+      [{ text: `Done ? ✅`, callback_data: '/done' }],
     ];
 
     // Set up the keyboard markup
@@ -288,7 +283,7 @@ export class BotService {
         },
       ],
       [{ text: 'Enable Notification 🔔', callback_data: '/subscribe' }],
-      [{ text: `Done ? 👍`, callback_data: '/done' }],
+      [{ text: `Done ? ✅`, callback_data: '/done' }],
     ];
 
     // Set up the keyboard markup
@@ -297,33 +292,50 @@ export class BotService {
     };
     console.log('I am here');
     try {
-      const groupId = -1002116374739;
+      //-1002136597023
+      //-1002116374739 cryptoJamil
+      const groupId = -1002136597023;
       const user_Id = userId;
+      console.log('user id :', user_Id);
+      const chat_Id = +chatId;
+      console.log('chat id :', chat_Id);
       let isMember: boolean;
       // Check if the user is a member of the group
       // const isMember = await this.bot.getChatMember(groupId, user_Id);
+
       this.bot
-        .getChatMember(groupId, user_Id)
-        .then(() => {
-          isMember = true;
+        .getChatMember(groupId, userId)
+        .then((member) => {
+          if (
+            member.status === 'member' ||
+            member.status === 'administrator' ||
+            member.status === 'creator'
+          ) {
+            isMember = true;
+            console.log('status :', member.status);
+          } else {
+            isMember = false;
+          }
         })
         .catch((e) => {
           if (e.response.body.error_code == 400) {
+            console.log('does not exist :', e.response.body);
             isMember = false;
           }
         });
       // console.log('this is a memeber :', isMember);
       const isSubbed = await this.databaseService.user.findFirst({
-        where: { chat_id: +chatId },
+        where: { chat_id: chat_Id },
       });
-
+      console.log('is member :', isMember);
       if (isSubbed.subscribed && isMember) {
-        return this.sendMainMenu(userId.toString());
+        return this.sendMainMenu(chatId);
       }
       return await this.bot.sendMessage(
         chatId,
         ' 🚨 You need to subscribe to our channel and turn on your notification:',
         {
+          parse_mode: 'HTML',
           reply_markup: replyMarkup,
         },
       );
@@ -377,14 +389,27 @@ export class BotService {
         // Add more cases for other airdrop categories as needed
         default:
           // Handle unknown commands or provide instructions
-          return await this.sendMessageToUser(
+          const keyboard = [
+            [{ text: 'Hottest 🔥 Airdrops', callback_data: '/hottest' }],
+            [
+              {
+                text: 'Potential 💡 Airdrops',
+                callback_data: '/potential',
+              },
+            ],
+            [{ text: 'Latest  📅  Airdrops', callback_data: '/latest' }],
+          ];
+
+          // Set up the keyboard markup
+          const replyMarkup = {
+            inline_keyboard: keyboard,
+          };
+          return this.bot.sendMessage(
             chatId,
-            'Unknown command. Please use\n\n' +
-              '\t /hottest - View hottest 🔥 airdrops\n' +
-              '\t /potential - View potential 💡 airdrops\n' +
-              '\t /latest - View latest 📅 airdrops\n\n' +
-              '\t /subscribe - Subscribe 🔄 to get notified of the lastest airdrops\n' +
-              `\t /unsubscribe - ❌ To stop getting notification from me`,
+            '❌ Use the commands below to scan through Airdrops:',
+            {
+              reply_markup: replyMarkup,
+            },
           );
       }
     } catch (error) {
@@ -397,7 +422,7 @@ export class BotService {
     // console.log(query.message.chat.id);
     const chatId = query.message.chat.id;
     const command = query.data;
-    const userId = query.message.from.id;
+    const userId = query.from.id;
     console.log(query);
     console.log(userId, chatId);
     try {
@@ -405,18 +430,22 @@ export class BotService {
         case '/getstarted':
           const started = await this.sendMenu(chatId);
           if (started) break;
+          break;
         case '/done':
           const done = await this.checkDone(chatId, userId);
           if (done) break;
+          break;
         case '/hottest':
           const hottest = await this.sendHottestAirdrops(chatId);
           if (hottest) break;
+          break;
         case '/potential':
           const potential = await this.sendPotentialAirdrops(chatId);
           if (potential) break;
         case '/latest':
           const latest = await this.sendLatestAirdrops(chatId);
           if (latest) break;
+          break;
         case '/subscribe':
           const suscribed = await this.updateUser(query.message.chat.username, {
             subscribed: true,
@@ -445,14 +474,27 @@ export class BotService {
         // Add more cases for other airdrop categories as needed
         default:
           // Handle unknown commands or provide instructions
-          return await this.sendMessageToUser(
+          const keyboard = [
+            [{ text: 'Hottest 🔥 Airdrops', callback_data: '/hottest' }],
+            [
+              {
+                text: 'Potential 💡 Airdrops',
+                callback_data: '/potential',
+              },
+            ],
+            [{ text: 'Latest  📅  Airdrops', callback_data: '/latest' }],
+          ];
+
+          // Set up the keyboard markup
+          const replyMarkup = {
+            inline_keyboard: keyboard,
+          };
+          return this.bot.sendMessage(
             chatId,
-            'Unknown command. Please use\n\n' +
-              '\t /hottest - View hottest 🔥 airdrops\n' +
-              '\t /potential - View potential 💡 airdrops\n' +
-              '\t /latest - View latest 📅 airdrops\n\n' +
-              '\t /subscribe - Subscribe 🔄 to get notified of the lastest airdrops\n' +
-              `\t /unsubscribe - ❌ To stop getting notification from me`,
+            '❌ Use the commands below to scan through Airdrops:',
+            {
+              reply_markup: replyMarkup,
+            },
           );
       }
     } catch (error) {

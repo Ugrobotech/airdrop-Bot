@@ -15,7 +15,7 @@ model User {
   id         Int      @id @default(autoincrement())
   username   String   @unique
   first_name String
-  chat_id    Int
+  chat_id    BigInt
   subscribed Boolean  @default(false)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
