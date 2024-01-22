@@ -6,7 +6,7 @@ import { Prisma } from '@prisma/client';
 import { convert } from 'html-to-text';
 
 // Replace with your actual Telegram Bot token
-const TELEGRAM_TOKEN = '6772341762:AAFD7W55yv9i2OMUqnPb8hKOa6X-zXsuvqY';
+const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
 
 @Injectable()
 export class BotService {

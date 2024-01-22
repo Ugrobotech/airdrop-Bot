@@ -19,7 +19,12 @@ let AppModule = class AppModule {
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [bot_module_1.BotModule, config_1.ConfigModule.forRoot(), database_module_1.DatabaseModule, admin_module_1.AdminModule],
+        imports: [
+            bot_module_1.BotModule,
+            config_1.ConfigModule.forRoot({ isGlobal: true }),
+            database_module_1.DatabaseModule,
+            admin_module_1.AdminModule,
+        ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
     })

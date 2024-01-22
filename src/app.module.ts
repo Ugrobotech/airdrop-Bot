@@ -7,7 +7,12 @@ import { DatabaseModule } from './database/database.module';
 import { AdminModule } from './admin/admin.module';
 
 @Module({
-  imports: [BotModule, ConfigModule.forRoot(), DatabaseModule, AdminModule],
+  imports: [
+    BotModule,
+    ConfigModule.forRoot({ isGlobal: true }),
+    DatabaseModule,
+    AdminModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
