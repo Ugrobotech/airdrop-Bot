@@ -246,7 +246,7 @@ export class BotService {
     const keyboard = [
       [
         {
-          text: 'Join channel 💬',
+          text: 'Subscribe to channel 💬',
           url: 'https://t.me/CryptoJamil',
         },
       ],
@@ -278,7 +278,7 @@ export class BotService {
     const keyboard = [
       [
         {
-          text: 'Join channel 💬',
+          text: 'Subscribe to channel 💬',
           url: 'https://t.me/CryptoJamil',
         },
       ],
@@ -453,7 +453,7 @@ export class BotService {
           if (suscribed) {
             return await this.sendMessageToUser(
               chatId,
-              'you have successfully subscribed to our services',
+              'you have successfully subscribed to getting notified of our services',
             );
           }
 
