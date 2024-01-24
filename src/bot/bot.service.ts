@@ -229,7 +229,7 @@ export class BotService {
     try {
       return await this.sendPictureToUser(
         chatId,
-        './assets/airdropBot.jpg',
+        'https://ibb.co/L1Ps4jx',
         'Welcome👋! to AirdropScanBot @Airdrop_ScanBot, your go-to airdrop scanner! 🚀',
         replyMarkup,
       );
