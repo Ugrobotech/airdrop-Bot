@@ -516,7 +516,12 @@ export class BotService {
     try {
       const detailsMessage = `${airdropName}\n\n
     ${network}.\n${details}.\n\n\t${steps}\n\n\tCost: ${cost}`;
-      return await this.sendPictureToUser(chatId, imageUrl, detailsMessage);
+      // send without picture is imageurl is empty
+      if (imageUrl) {
+        return await this.sendPictureToUser(chatId, imageUrl, detailsMessage);
+      } else {
+        return await this.sendMessageToUser(chatId, detailsMessage);
+      }
     } catch (error) {
       console.error(error);
     }
