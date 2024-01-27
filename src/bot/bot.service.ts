@@ -627,4 +627,7 @@ export class BotService {
       console.error(error);
     }
   };
+
+  // method for users to add aidrop to wishlist
+  addToWishlist = async (airdrop: string) => {};
 }
