@@ -629,5 +629,11 @@ export class BotService {
   };
 
   // method for users to add aidrop to wishlist
-  addToWishlist = async (airdrop: string) => {};
+  addToWishlist = async (airdropId: number) => {
+    try {
+      this.databaseService.user.findFirst({
+        where: { id: airdropId },
+      });
+    } catch (error) {}
+  };
 }
