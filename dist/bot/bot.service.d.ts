@@ -54,6 +54,10 @@ export declare class BotService {
     sendHottestAirdrops: (chatId: string) => Promise<Promise<TelegramBot.Message>[]>;
     sendPotentialAirdrops: (chatId: string) => Promise<Promise<TelegramBot.Message>[]>;
     sendLatestAirdrops: (chatId: string) => Promise<Promise<TelegramBot.Message>[]>;
-    sendwishListAirdrops: (chatId: number) => Promise<Promise<TelegramBot.Message>[]>;
-    addToWishlist: (airdropId: number) => Promise<void>;
+    sendwishListAirdrops: (chatId: number) => Promise<TelegramBot.Message | Promise<TelegramBot.Message>[]>;
+    removeFromWishlist: (airdrop_Id: number, owner_Id: number) => Promise<{
+        id: number;
+        ownerId: number;
+        airdropId: number;
+    } | Prisma.BatchPayload>;
 }

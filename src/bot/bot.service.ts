@@ -407,6 +407,10 @@ export class BotService {
             break;
           }
           break;
+        case '/view_wishlist':
+          const list = await this.sendwishListAirdrops(chatId);
+          if (list) break;
+          break;
 
         // Add more cases for other airdrop categories as needed
         default:
@@ -420,6 +424,7 @@ export class BotService {
               },
             ],
             [{ text: 'Latest  📅  Airdrops', callback_data: '/latest' }],
+            [{ text: 'view wishList 🛒', callback_data: '/view_wishlist' }],
           ];
 
           // Set up the keyboard markup
@@ -551,6 +556,41 @@ export class BotService {
           if (list) break;
           break;
 
+        case '/removefrom_wishlist':
+          const userDbId3 = await this.databaseService.user.findFirst({
+            where: { chat_id: chatId },
+          });
+          if (userDbId3) {
+            try {
+              const airdrop = await this.removeFromWishlist(
+                airdropId,
+                userDbId3.id,
+              );
+              console.log('airdrop to del :', airdrop);
+              if (airdrop) {
+                return this.bot.sendMessage(
+                  chatId,
+                  '✅ Successfully removed from Wishlist',
+                );
+              } else if (airdrop == null) {
+                return this.bot.sendMessage(
+                  chatId,
+                  '❓ Sorry the airdrop is not in your wishlist',
+                );
+              } else {
+                return this.bot.sendMessage(
+                  chatId,
+                  '❌ Sorry there was an error try again',
+                );
+              }
+            } catch (error) {
+              console.log(error);
+            }
+            break;
+          }
+
+          break;
+
         // Add more cases for other airdrop categories as needed
         default:
           // Handle unknown commands or provide instructions
@@ -563,6 +603,7 @@ export class BotService {
               },
             ],
             [{ text: 'Latest  📅  Airdrops', callback_data: '/latest' }],
+            [{ text: 'view wishList 🛒', callback_data: '/view_wishlist' }],
             [{ text: 'view wishList 🛒', callback_data: '/view_wishlist' }],
           ];
 
@@ -806,6 +847,9 @@ export class BotService {
         if (wishLists) {
           const wishListArray = wishLists.Wishlist;
           console.log('db2: ', wishListArray);
+          if (wishListArray.length == 0) {
+            return this.bot.sendMessage(chatId, '❓ Your wishlist is empty');
+          }
           const WishList = wishListArray.map(async (airdrops) => {
             const options = {
               wordwrap: 130,
@@ -838,11 +882,28 @@ export class BotService {
   };
 
   // method for users to add aidrop to wishlist
-  addToWishlist = async (airdropId: number) => {
+  // addToWishlist = async (airdropId: number) => {
+  //   try {
+  //     this.databaseService.user.findFirst({
+  //       where: { id: airdropId },
+  //     });
+  //   } catch (error) {}
+  // };
+
+  // method for users to remove aidrop to wishlist
+  removeFromWishlist = async (airdrop_Id: number, owner_Id: number) => {
     try {
-      this.databaseService.user.findFirst({
-        where: { id: airdropId },
+      const exist = await this.databaseService.wishlist.findFirst({
+        where: { airdropId: airdrop_Id, ownerId: owner_Id },
       });
+      console.log('exist :', exist);
+      if (exist) {
+        return this.databaseService.wishlist.deleteMany({
+          where: { airdropId: airdrop_Id, ownerId: owner_Id },
+        });
+      } else {
+        return exist;
+      }
     } catch (error) {}
   };
 }
