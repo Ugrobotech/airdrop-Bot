@@ -547,38 +547,8 @@ export class BotService {
           break;
 
         case '/view_wishlist':
-          // get the userId first
-          const userDbId2 = await this.databaseService.user.findFirst({
-            where: { chat_id: chatId },
-            include: { Wishlist: { include: { airdrop: true } } },
-          });
-          if (userDbId2) {
-            try {
-              console.log('db2: ', userDbId2);
-              const wishlist = await this.databaseService.wishlist.findMany({
-                where: {
-                  ownerId: userDbId2.id,
-                },
-                include: {
-                  airdrop: true,
-                },
-              });
-              console.log(wishlist);
-              if (wishlist) {
-                return this.bot.sendMessage(
-                  chatId,
-                  'Successfully added to Wishlist',
-                );
-              } else {
-                return this.bot.sendMessage(
-                  chatId,
-                  'Sorry there was error while adding to wishlist',
-                );
-              }
-            } catch (error) {}
-            break;
-          }
-
+          const list = await this.sendwishListAirdrops(chatId);
+          if (list) break;
           break;
 
         // Add more cases for other airdrop categories as needed
@@ -813,6 +783,53 @@ export class BotService {
           );
         });
         return latestDrops;
+      }
+      return;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // Method to wishlists airdrops
+  sendwishListAirdrops = async (chatId: number) => {
+    try {
+      const message = await this.sendMessageToUser(
+        chatId.toString(),
+        '🛒 Your wishlists 👇',
+      );
+      if (message) {
+        // use chatId to get all users wishlist
+        const wishLists = await this.databaseService.user.findFirst({
+          where: { chat_id: chatId },
+          include: { Wishlist: { include: { airdrop: true } } },
+        });
+        if (wishLists) {
+          const wishListArray = wishLists.Wishlist;
+          console.log('db2: ', wishListArray);
+          const WishList = wishListArray.map(async (airdrops) => {
+            const options = {
+              wordwrap: 130,
+              // ...
+            };
+            const ConvertedText = convert(
+              airdrops.airdrop.description,
+              options,
+            );
+            return await this.sendWishListAirdropDetails(
+              chatId.toString(),
+              airdrops.airdrop.id,
+              airdrops.airdrop.imageUrl,
+              airdrops.airdrop.name,
+              airdrops.airdrop.network,
+              ConvertedText,
+              airdrops.airdrop.category,
+              airdrops.airdrop.steps,
+              airdrops.airdrop.cost,
+            );
+          });
+          return WishList;
+        }
+        return;
       }
       return;
     } catch (error) {
