@@ -25,6 +25,11 @@ export declare class BotService {
         createdAt: Date;
         updatedAt: Date;
     }>;
+    saveToWishlist(owner_Id: number, airdrop_Id: number): Promise<{
+        id: number;
+        ownerId: number;
+        airdropId: number;
+    } | "exist">;
     fetchAirdrops(category: 'LATEST' | 'HOTTEST' | 'POTENTIAL'): Promise<{
         id: number;
         name: string;
@@ -44,7 +49,8 @@ export declare class BotService {
     checkDone: (chatId: string, userId: number) => Promise<TelegramBot.Message>;
     handleAirdropCommands: (msg: any) => Promise<TelegramBot.Message>;
     handleButtonCommands: (query: any) => Promise<TelegramBot.Message>;
-    sendAirdropDetails: (chatId: string, imageUrl: string, airdropName: string, network?: string, details?: string, category?: string, steps?: string, cost?: string) => Promise<TelegramBot.Message>;
+    sendAirdropDetails: (chatId: string, airdropId: number, imageUrl: string, airdropName: string, network?: string, details?: string, category?: string, steps?: string, cost?: string) => Promise<TelegramBot.Message>;
+    sendWishListAirdropDetails: (chatId: string, airdropId: number, imageUrl: string, airdropName: string, network?: string, details?: string, category?: string, steps?: string, cost?: string) => Promise<TelegramBot.Message>;
     sendHottestAirdrops: (chatId: string) => Promise<Promise<TelegramBot.Message>[]>;
     sendPotentialAirdrops: (chatId: string) => Promise<Promise<TelegramBot.Message>[]>;
     sendLatestAirdrops: (chatId: string) => Promise<Promise<TelegramBot.Message>[]>;

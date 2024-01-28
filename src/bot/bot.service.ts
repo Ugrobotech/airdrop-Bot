@@ -114,17 +114,17 @@ export class BotService {
   async saveToWishlist(owner_Id: number, airdrop_Id: number) {
     try {
       const isAdded = await this.databaseService.wishlist.findFirst({
-        where: { airdropId: airdrop_Id },
+        where: { airdropId: airdrop_Id, ownerId: owner_Id },
       });
       if (!isAdded) {
-        return this.databaseService.wishlist.create({
+        return await this.databaseService.wishlist.create({
           data: {
             owner: { connect: { id: owner_Id } },
             airdrop: { connect: { id: airdrop_Id } },
           },
         });
       }
-      return;
+      return 'exist';
     } catch (error) {
       console.error(error);
     }
@@ -441,11 +441,30 @@ export class BotService {
 
   // Method to handle airdrop commands
   handleButtonCommands = async (query: any) => {
+    let command: string;
+    let airdropId: number;
+    // function to check if query.data is a json type
+    function isJSON(str) {
+      try {
+        JSON.parse(str);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    if (isJSON(query.data)) {
+      command = JSON.parse(query.data).action;
+      airdropId = JSON.parse(query.data).id;
+    } else {
+      command = query.data;
+    }
     // console.log(query.message.chat.id);
     const chatId = query.message.chat.id;
-    const command = query.data;
+
     const userId = query.from.id;
-    console.log(query);
+    console.log(command);
+    console.log(airdropId);
     console.log(userId, chatId);
     try {
       switch (command) {
@@ -501,9 +520,63 @@ export class BotService {
           if (userDbId) {
             try {
               console.log(userDbId);
-              // const addToWishlist = await this.saveToWishlist(userDbId.id, {
-              //   subscribed: false,
+              const addToWishlist = await this.saveToWishlist(
+                userDbId.id,
+                airdropId,
+              );
+              if (addToWishlist && addToWishlist !== 'exist') {
+                return this.bot.sendMessage(
+                  chatId,
+                  '✅ Successfully added to Wishlist',
+                );
+              } else if (addToWishlist === 'exist') {
+                return this.bot.sendMessage(
+                  chatId,
+                  '👍 Airdrop already in your wishlist',
+                );
+              } else {
+                return this.bot.sendMessage(
+                  chatId,
+                  '❌ Sorry there was an error while adding to wishlist',
+                );
+              }
             } catch (error) {}
+            break;
+          }
+
+          break;
+
+        case '/view_wishlist':
+          // get the userId first
+          const userDbId2 = await this.databaseService.user.findFirst({
+            where: { chat_id: chatId },
+            include: { Wishlist: { include: { airdrop: true } } },
+          });
+          if (userDbId2) {
+            try {
+              console.log('db2: ', userDbId2);
+              const wishlist = await this.databaseService.wishlist.findMany({
+                where: {
+                  ownerId: userDbId2.id,
+                },
+                include: {
+                  airdrop: true,
+                },
+              });
+              console.log(wishlist);
+              if (wishlist) {
+                return this.bot.sendMessage(
+                  chatId,
+                  'Successfully added to Wishlist',
+                );
+              } else {
+                return this.bot.sendMessage(
+                  chatId,
+                  'Sorry there was error while adding to wishlist',
+                );
+              }
+            } catch (error) {}
+            break;
           }
 
           break;
@@ -520,6 +593,7 @@ export class BotService {
               },
             ],
             [{ text: 'Latest  📅  Airdrops', callback_data: '/latest' }],
+            [{ text: 'view wishList 🛒', callback_data: '/view_wishlist' }],
           ];
 
           // Set up the keyboard markup
@@ -542,7 +616,7 @@ export class BotService {
   // Method to send detailed information about a specific airdrop
   sendAirdropDetails = async (
     chatId: string,
-    aidropId: number,
+    airdropId: number,
     imageUrl: string,
     airdropName: string,
     network?: string,
@@ -557,7 +631,7 @@ export class BotService {
           text: 'Add to wishList 🛒',
           callback_data: JSON.stringify({
             action: '/add_to_wishlist',
-            id: aidropId,
+            id: airdropId,
           }),
         },
       ],
@@ -591,6 +665,7 @@ export class BotService {
   // sendWishlist airdrops
   sendWishListAirdropDetails = async (
     chatId: string,
+    airdropId: number,
     imageUrl: string,
     airdropName: string,
     network?: string,
@@ -603,7 +678,10 @@ export class BotService {
       [
         {
           text: 'Remove from wishlist 🛒❌',
-          callback_data: '/remove_from_wishlist',
+          callback_data: JSON.stringify({
+            action: '/removefrom_wishlist',
+            id: airdropId,
+          }),
         },
       ],
     ];
