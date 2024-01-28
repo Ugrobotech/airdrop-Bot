@@ -46,7 +46,7 @@ export declare class AdminController {
         cost: string;
         imageUrl: string;
     }[]>;
-    notifyAll(id: string): Promise<Promise<import("node-telegram-bot-api").Message>[]>;
+    notifyAll(id: string, wishlist?: 'wishlist'): Promise<Promise<import("node-telegram-bot-api").Message>[]>;
     getAllUsers(): Promise<number>;
     getAllSubUsers(): Promise<number>;
 }

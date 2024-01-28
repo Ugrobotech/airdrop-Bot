@@ -43,9 +43,17 @@ export class AdminController {
     return this.adminService.findAll(category);
   }
   @Get(':id')
-  async notifyAll(@Param('id') id: string) {
-    return this.botService.notifyAllUsers(+id);
+  async notifyAll(
+    @Param('id') id: string,
+    @Query('wishlist') wishlist?: 'wishlist',
+  ) {
+    const _id = +id;
+    if (wishlist) {
+      return this.botService.notifyWishlist(_id);
+    }
+    return this.botService.notifyAllUsers(_id);
   }
+
   @Get('users')
   async getAllUsers() {
     return await this.adminService.getAllUsers();

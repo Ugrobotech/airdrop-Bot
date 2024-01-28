@@ -43,6 +43,7 @@ export declare class BotService {
     sendPictureToUser: (userId: string, imageUrl: string, message: string, markup?: TelegramBot.InlineKeyboardMarkup) => Promise<TelegramBot.Message>;
     sendMessageToUser: (userId: string, message: string) => Promise<TelegramBot.Message>;
     notifyAllUsers: (messageId: number) => Promise<Promise<TelegramBot.Message>[]>;
+    notifyWishlist: (airdrop_Id: number) => Promise<Promise<TelegramBot.Message>[]>;
     sendMainMenu: (chatId: string) => Promise<TelegramBot.Message>;
     sendWelcomeMenu: (chatId: string) => Promise<TelegramBot.Message>;
     sendMenu: (chatId: string) => Promise<TelegramBot.Message>;

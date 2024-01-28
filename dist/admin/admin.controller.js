@@ -34,8 +34,12 @@ let AdminController = class AdminController {
     async findAll(category) {
         return this.adminService.findAll(category);
     }
-    async notifyAll(id) {
-        return this.botService.notifyAllUsers(+id);
+    async notifyAll(id, wishlist) {
+        const _id = +id;
+        if (wishlist) {
+            return this.botService.notifyWishlist(_id);
+        }
+        return this.botService.notifyAllUsers(_id);
     }
     async getAllUsers() {
         return await this.adminService.getAllUsers();
@@ -77,8 +81,9 @@ __decorate([
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Query)('wishlist')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], AdminController.prototype, "notifyAll", null);
 __decorate([

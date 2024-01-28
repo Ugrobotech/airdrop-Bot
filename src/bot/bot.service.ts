@@ -203,6 +203,44 @@ export class BotService {
     }
   };
 
+  // Method to send a broadcast massage to all users about a coin in thier wishlist
+  notifyWishlist = async (airdrop_Id: number) => {
+    try {
+      const users = await this.databaseService.wishlist.findMany({
+        where: { airdropId: airdrop_Id },
+        include: { owner: true },
+      });
+      const message = await this.databaseService.airDrops.findFirst({
+        where: { id: airdrop_Id },
+      });
+      if (users && message) {
+        // const usersArray = users
+        const sendALL = users.map(async (user) => {
+          const options = {
+            wordwrap: 130,
+            // ...
+          };
+          const ConvertedText = convert(message.description, options);
+
+          return await this.sendAirdropDetails(
+            user.owner.chat_id.toString(),
+            message.id,
+            message.imageUrl,
+            message.name,
+            message.network,
+            ConvertedText,
+            message.category,
+            message.steps,
+            message.cost,
+          );
+        });
+        return sendALL;
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   // Method to send the main menu of available actions
   sendMainMenu = async (chatId: string) => {
     // Create inline keyboard with buttons
