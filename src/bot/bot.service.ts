@@ -183,19 +183,25 @@ export class BotService {
             wordwrap: 130,
             // ...
           };
-          const ConvertedText = convert(message.description, options);
-
-          return await this.sendAirdropDetails(
+          const alert = await this.bot.sendMessage(
             user.chat_id.toString(),
-            message.id,
-            message.imageUrl,
-            message.name,
-            message.network,
-            ConvertedText,
-            message.category,
-            message.steps,
-            message.cost,
+            '⚠️  New Airdrop alert 👇',
           );
+          if (alert) {
+            const ConvertedText = convert(message.description, options);
+
+            return await this.sendAirdropDetails(
+              user.chat_id.toString(),
+              message.id,
+              message.imageUrl,
+              message.name,
+              message.network,
+              ConvertedText,
+              message.category,
+              message.steps,
+              message.cost,
+            );
+          }
         });
         return sendALL;
       }
@@ -221,19 +227,25 @@ export class BotService {
             wordwrap: 130,
             // ...
           };
-          const ConvertedText = convert(message.description, options);
 
-          return await this.sendAirdropDetails(
+          const alert = await this.bot.sendMessage(
             user.owner.chat_id.toString(),
-            message.id,
-            message.imageUrl,
-            message.name,
-            message.network,
-            ConvertedText,
-            message.category,
-            message.steps,
-            message.cost,
+            '⚠️  Update alert 👇',
           );
+          if (alert) {
+            const ConvertedText = convert(message.description, options);
+            return await this.sendWishListAirdropDetails(
+              user.owner.chat_id.toString(),
+              message.id,
+              message.imageUrl,
+              message.name,
+              message.network,
+              ConvertedText,
+              message.category,
+              message.steps,
+              message.cost,
+            );
+          }
         });
         return sendALL;
       }
