@@ -32,6 +32,7 @@ let BotService = BotService_1 = class BotService {
                     { text: 'Subscribe 🔄', callback_data: 'subscribe' },
                     { text: 'Unsubscribe ❌', callback_data: 'unsubscribe' },
                 ],
+                [{ text: 'view wishList 🛒', callback_data: '/view_wishlist' }],
             ];
             const replyMarkup = {
                 inline_keyboard: keyboard,
@@ -106,7 +107,7 @@ let BotService = BotService_1 = class BotService {
         };
         this.notifyWishlist = async (airdrop_Id) => {
             try {
-                const users = await this.databaseService.wishlist.findMany({
+                const users = await this.databaseService.wishlists.findMany({
                     where: { airdropId: airdrop_Id },
                     include: { owner: true },
                 });
@@ -437,7 +438,6 @@ let BotService = BotService_1 = class BotService {
                             ],
                             [{ text: 'Latest  📅  Airdrops', callback_data: '/latest' }],
                             [{ text: 'view wishList 🛒', callback_data: '/view_wishlist' }],
-                            [{ text: 'view wishList 🛒', callback_data: '/view_wishlist' }],
                         ];
                         const replyMarkup = {
                             inline_keyboard: keyboard,
@@ -606,12 +606,12 @@ let BotService = BotService_1 = class BotService {
         };
         this.removeFromWishlist = async (airdrop_Id, owner_Id) => {
             try {
-                const exist = await this.databaseService.wishlist.findFirst({
+                const exist = await this.databaseService.wishlists.findFirst({
                     where: { airdropId: airdrop_Id, ownerId: owner_Id },
                 });
                 console.log('exist :', exist);
                 if (exist) {
-                    return this.databaseService.wishlist.deleteMany({
+                    return this.databaseService.wishlists.deleteMany({
                         where: { airdropId: airdrop_Id, ownerId: owner_Id },
                     });
                 }
@@ -647,11 +647,11 @@ let BotService = BotService_1 = class BotService {
     }
     async saveToWishlist(owner_Id, airdrop_Id) {
         try {
-            const isAdded = await this.databaseService.wishlist.findFirst({
+            const isAdded = await this.databaseService.wishlists.findFirst({
                 where: { airdropId: airdrop_Id, ownerId: owner_Id },
             });
             if (!isAdded) {
-                return await this.databaseService.wishlist.create({
+                return await this.databaseService.wishlists.create({
                     data: {
                         owner: { connect: { id: owner_Id } },
                         airdrop: { connect: { id: airdrop_Id } },

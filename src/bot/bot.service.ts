@@ -40,6 +40,7 @@ export class BotService {
         { text: 'Subscribe 🔄', callback_data: 'subscribe' },
         { text: 'Unsubscribe ❌', callback_data: 'unsubscribe' },
       ],
+      [{ text: 'view wishList 🛒', callback_data: '/view_wishlist' }],
     ];
 
     // Set up the keyboard markup
@@ -113,11 +114,11 @@ export class BotService {
   // Method to  save a new userdata to the database
   async saveToWishlist(owner_Id: number, airdrop_Id: number) {
     try {
-      const isAdded = await this.databaseService.wishlist.findFirst({
+      const isAdded = await this.databaseService.wishlists.findFirst({
         where: { airdropId: airdrop_Id, ownerId: owner_Id },
       });
       if (!isAdded) {
-        return await this.databaseService.wishlist.create({
+        return await this.databaseService.wishlists.create({
           data: {
             owner: { connect: { id: owner_Id } },
             airdrop: { connect: { id: airdrop_Id } },
@@ -206,7 +207,7 @@ export class BotService {
   // Method to send a broadcast massage to all users about a coin in thier wishlist
   notifyWishlist = async (airdrop_Id: number) => {
     try {
-      const users = await this.databaseService.wishlist.findMany({
+      const users = await this.databaseService.wishlists.findMany({
         where: { airdropId: airdrop_Id },
         include: { owner: true },
       });
@@ -642,7 +643,6 @@ export class BotService {
             ],
             [{ text: 'Latest  📅  Airdrops', callback_data: '/latest' }],
             [{ text: 'view wishList 🛒', callback_data: '/view_wishlist' }],
-            [{ text: 'view wishList 🛒', callback_data: '/view_wishlist' }],
           ];
 
           // Set up the keyboard markup
@@ -931,12 +931,12 @@ export class BotService {
   // method for users to remove aidrop to wishlist
   removeFromWishlist = async (airdrop_Id: number, owner_Id: number) => {
     try {
-      const exist = await this.databaseService.wishlist.findFirst({
+      const exist = await this.databaseService.wishlists.findFirst({
         where: { airdropId: airdrop_Id, ownerId: owner_Id },
       });
       console.log('exist :', exist);
       if (exist) {
-        return this.databaseService.wishlist.deleteMany({
+        return this.databaseService.wishlists.deleteMany({
           where: { airdropId: airdrop_Id, ownerId: owner_Id },
         });
       } else {
