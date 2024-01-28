@@ -110,6 +110,26 @@ export class BotService {
     });
   }
 
+  // Method to  save a new userdata to the database
+  async saveToWishlist(owner_Id: number, airdrop_Id: number) {
+    try {
+      const isAdded = await this.databaseService.wishlist.findFirst({
+        where: { airdropId: airdrop_Id },
+      });
+      if (!isAdded) {
+        return this.databaseService.wishlist.create({
+          data: {
+            owner: { connect: { id: owner_Id } },
+            airdrop: { connect: { id: airdrop_Id } },
+          },
+        });
+      }
+      return;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   // Method to  fetch airdrops from the database
   async fetchAirdrops(category: 'LATEST' | 'HOTTEST' | 'POTENTIAL') {
     try {
@@ -166,6 +186,7 @@ export class BotService {
 
           return await this.sendAirdropDetails(
             user.chat_id.toString(),
+            message.id,
             message.imageUrl,
             message.name,
             message.network,
@@ -189,6 +210,7 @@ export class BotService {
       [{ text: 'Hottest 🔥 Airdrops', callback_data: '/hottest' }],
       [{ text: 'Potential 💡 Airdrops', callback_data: '/potential' }],
       [{ text: 'Latest  📅  Airdrops', callback_data: '/latest' }],
+      [{ text: 'view wishList 🛒', callback_data: '/view_wishlist' }],
     ];
 
     // Set up the keyboard markup
@@ -471,6 +493,21 @@ export class BotService {
           }
           break;
 
+        case '/add_to_wishlist':
+          // get the userId first
+          const userDbId = await this.databaseService.user.findFirst({
+            where: { chat_id: chatId },
+          });
+          if (userDbId) {
+            try {
+              console.log(userDbId);
+              // const addToWishlist = await this.saveToWishlist(userDbId.id, {
+              //   subscribed: false,
+            } catch (error) {}
+          }
+
+          break;
+
         // Add more cases for other airdrop categories as needed
         default:
           // Handle unknown commands or provide instructions
@@ -505,6 +542,7 @@ export class BotService {
   // Method to send detailed information about a specific airdrop
   sendAirdropDetails = async (
     chatId: string,
+    aidropId: number,
     imageUrl: string,
     airdropName: string,
     network?: string,
@@ -513,14 +551,82 @@ export class BotService {
     steps?: string,
     cost?: string,
   ) => {
+    const keyboard = [
+      [
+        {
+          text: 'Add to wishList 🛒',
+          callback_data: JSON.stringify({
+            action: '/add_to_wishlist',
+            id: aidropId,
+          }),
+        },
+      ],
+    ];
+
+    // Set up the keyboard markup
+    const replyMarkup = {
+      inline_keyboard: keyboard,
+    };
     try {
       const detailsMessage = `${airdropName}\n\n
     ${network}.\n${details}.\n\n\t${steps}\n\n\tCost: ${cost}`;
       // send without picture is imageurl is empty
       if (imageUrl) {
-        return await this.sendPictureToUser(chatId, imageUrl, detailsMessage);
+        return await this.sendPictureToUser(
+          chatId,
+          imageUrl,
+          detailsMessage,
+          replyMarkup,
+        );
       } else {
-        return await this.sendMessageToUser(chatId, detailsMessage);
+        return await this.bot.sendMessage(chatId, detailsMessage, {
+          reply_markup: replyMarkup,
+        });
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // sendWishlist airdrops
+  sendWishListAirdropDetails = async (
+    chatId: string,
+    imageUrl: string,
+    airdropName: string,
+    network?: string,
+    details?: string,
+    category?: string,
+    steps?: string,
+    cost?: string,
+  ) => {
+    const keyboard = [
+      [
+        {
+          text: 'Remove from wishlist 🛒❌',
+          callback_data: '/remove_from_wishlist',
+        },
+      ],
+    ];
+
+    // Set up the keyboard markup
+    const replyMarkup = {
+      inline_keyboard: keyboard,
+    };
+    try {
+      const detailsMessage = `${airdropName}\n\n
+    ${network}.\n${details}.\n\n\t${steps}\n\n\tCost: ${cost}`;
+      // send without picture is imageurl is empty
+      if (imageUrl) {
+        return await this.sendPictureToUser(
+          chatId,
+          imageUrl,
+          detailsMessage,
+          replyMarkup,
+        );
+      } else {
+        return await this.bot.sendMessage(chatId, detailsMessage, {
+          reply_markup: replyMarkup,
+        });
       }
     } catch (error) {
       console.error(error);
@@ -546,6 +652,7 @@ export class BotService {
 
           return await this.sendAirdropDetails(
             chatId,
+            airdrop.id,
             airdrop.imageUrl,
             airdrop.name,
             airdrop.network,
@@ -580,6 +687,7 @@ export class BotService {
           const ConvertedText = convert(airdrop.description, options);
           return await this.sendAirdropDetails(
             chatId,
+            airdrop.id,
             airdrop.imageUrl,
             airdrop.name,
             airdrop.network,
@@ -616,6 +724,7 @@ export class BotService {
           const ConvertedText = convert(airdrop.description, options);
           return await this.sendAirdropDetails(
             chatId,
+            airdrop.id,
             airdrop.imageUrl,
             airdrop.name,
             airdrop.network,

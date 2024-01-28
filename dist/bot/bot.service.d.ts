@@ -48,4 +48,5 @@ export declare class BotService {
     sendHottestAirdrops: (chatId: string) => Promise<Promise<TelegramBot.Message>[]>;
     sendPotentialAirdrops: (chatId: string) => Promise<Promise<TelegramBot.Message>[]>;
     sendLatestAirdrops: (chatId: string) => Promise<Promise<TelegramBot.Message>[]>;
+    addToWishlist: (airdropId: number) => Promise<void>;
 }
