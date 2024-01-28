@@ -179,28 +179,34 @@ export class BotService {
       });
       if (users && message) {
         const sendALL = users.map(async (user) => {
-          const options = {
-            wordwrap: 130,
-            // ...
-          };
-          const alert = await this.bot.sendMessage(
-            user.chat_id.toString(),
-            '⚠️  New Airdrop alert 👇',
-          );
-          if (alert) {
-            const ConvertedText = convert(message.description, options);
+          // this catch blockn will catch for users that have blocked the bot so it wont send message and crash ther server
+          try {
+            const options = {
+              wordwrap: 130,
+              // ...
+            };
 
-            return await this.sendAirdropDetails(
+            const alert = await this.bot.sendMessage(
               user.chat_id.toString(),
-              message.id,
-              message.imageUrl,
-              message.name,
-              message.network,
-              ConvertedText,
-              message.category,
-              message.steps,
-              message.cost,
+              '⚠️  New Airdrop alert 👇',
             );
+            if (alert) {
+              const ConvertedText = convert(message.description, options);
+
+              return await this.sendAirdropDetails(
+                user.chat_id.toString(),
+                message.id,
+                message.imageUrl,
+                message.name,
+                message.network,
+                ConvertedText,
+                message.category,
+                message.steps,
+                message.cost,
+              );
+            }
+          } catch (error) {
+            console.log(error);
           }
         });
         return sendALL;
@@ -223,28 +229,33 @@ export class BotService {
       if (users && message) {
         // const usersArray = users
         const sendALL = users.map(async (user) => {
-          const options = {
-            wordwrap: 130,
-            // ...
-          };
+          // this catch blockn will catch for users that have blocked the bot so it wont send message and crash ther server
+          try {
+            const options = {
+              wordwrap: 130,
+              // ...
+            };
 
-          const alert = await this.bot.sendMessage(
-            user.owner.chat_id.toString(),
-            '⚠️  Update alert 👇',
-          );
-          if (alert) {
-            const ConvertedText = convert(message.description, options);
-            return await this.sendWishListAirdropDetails(
+            const alert = await this.bot.sendMessage(
               user.owner.chat_id.toString(),
-              message.id,
-              message.imageUrl,
-              message.name,
-              message.network,
-              ConvertedText,
-              message.category,
-              message.steps,
-              message.cost,
+              '⚠️  Update alert 👇',
             );
+            if (alert) {
+              const ConvertedText = convert(message.description, options);
+              return await this.sendWishListAirdropDetails(
+                user.owner.chat_id.toString(),
+                message.id,
+                message.imageUrl,
+                message.name,
+                message.network,
+                ConvertedText,
+                message.category,
+                message.steps,
+                message.cost,
+              );
+            }
+          } catch (error) {
+            console.log(error);
           }
         });
         return sendALL;
