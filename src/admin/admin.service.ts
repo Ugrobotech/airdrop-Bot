@@ -31,12 +31,14 @@ export class AdminService {
     return await this.databaseService.airDrops.findMany();
   }
 
+  // gets all users that have subscribed
   async getSubUserCount() {
     return await this.databaseService.user.count({
       where: { subscribed: true },
     });
   }
 
+  // ths gets the count of users using the both
   async getAllUsers() {
     return await this.databaseService.user.count();
   }
