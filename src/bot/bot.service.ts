@@ -24,7 +24,6 @@ export class BotService {
     this.bot.on('message', this.onReceiveMessage);
     // Register event listener for incoming button commands
     this.bot.on('callback_query', this.handleButtonCommands);
-    this.bot.setMyCommands([{ command: '/hey', description: 'help me' }]);
   }
 
   // Event handler for incoming messages
@@ -414,6 +413,9 @@ export class BotService {
       });
       console.log('is member :', isMember);
       if (isSubbed.subscribed && isMember) {
+        await this.bot.setMyCommands([
+          { command: '/kedu', description: 'help me' },
+        ]);
         return this.sendMainMenu(chatId);
       }
       return await this.bot.sendMessage(
