@@ -24,6 +24,7 @@ export class BotService {
     this.bot.on('message', this.onReceiveMessage);
     // Register event listener for incoming button commands
     this.bot.on('callback_query', this.handleButtonCommands);
+    this.bot.setMyCommands([{ command: '/hey', description: 'help me' }]);
   }
 
   // Event handler for incoming messages
