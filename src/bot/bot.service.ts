@@ -413,9 +413,6 @@ export class BotService {
       });
       console.log('is member :', isMember);
       if (isSubbed.subscribed && isMember) {
-        await this.bot.setMyCommands([
-          { command: '/kedu', description: 'help me' },
-        ]);
         return this.sendMainMenu(chatId);
       }
       return await this.bot.sendMessage(
@@ -496,6 +493,7 @@ export class BotService {
           const replyMarkup = {
             inline_keyboard: keyboard,
           };
+
           return this.bot.sendMessage(
             chatId,
             '❌ Use the commands below to scan through Airdrops:',
