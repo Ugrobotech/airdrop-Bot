@@ -968,4 +968,10 @@ export class BotService {
       }
     } catch (error) {}
   };
+
+  // method to fetch airdrop chains
+  fetchChains = async () => {};
+
+  // method to get all airdrops from a chain
+  fetchByChain = async (chain: string) => {};
 }
