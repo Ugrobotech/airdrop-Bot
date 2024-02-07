@@ -970,7 +970,15 @@ export class BotService {
   };
 
   // method to fetch airdrop chains
-  fetchChains = async () => {};
+  fetchChains = async () => {
+    // const chains: string[] = [];
+
+    const airdrops = await this.databaseService.airDrops.findMany();
+
+    const chains = airdrops.map((airdrop) => {
+      return airdrop.network;
+    });
+  };
 
   // method to get all airdrops from a chain
   fetchByChain = async (chain: string) => {};
