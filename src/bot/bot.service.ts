@@ -1044,7 +1044,7 @@ export class BotService {
       if (airdrops) {
         const message = await this.sendMessageToUser(
           chatId,
-          `${chain} Airdrops 👇`,
+          `${chain} 🔗 Airdrops 👇`,
         );
         if (message) {
           const chainAirdrops = airdrops.map(async (airdrop) => {
