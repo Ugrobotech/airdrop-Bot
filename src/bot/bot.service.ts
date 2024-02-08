@@ -521,6 +521,7 @@ export class BotService {
   handleButtonCommands = async (query: any) => {
     let command: string;
     let airdropId: number;
+    let chain: string;
     // function to check if query.data is a json type
     function isJSON(str) {
       try {
@@ -534,6 +535,7 @@ export class BotService {
     if (isJSON(query.data)) {
       command = JSON.parse(query.data).action;
       airdropId = JSON.parse(query.data).id;
+      chain = JSON.parse(query.data).chain;
     } else {
       command = query.data;
     }
@@ -544,6 +546,10 @@ export class BotService {
     console.log(command);
     console.log(airdropId);
     console.log(userId, chatId);
+    // if there is  chain command fetch chain airdrop details
+    if (chain) {
+      return await this.fetchByChain(chain, chatId);
+    }
     try {
       switch (command) {
         case '/getstarted':
@@ -1003,7 +1009,13 @@ export class BotService {
         // create a Kyeboard from the available chains
         const keyboard = chains.map((chain) => {
           return [
-            { text: `${chain} chain 🔗 Airdrops`, callback_data: `/${chain}` },
+            {
+              text: `${chain} chain 🔗 Airdrops`,
+              callback_data: JSON.stringify({
+                action: `/${chain}`,
+                chain: chain,
+              }),
+            },
           ];
         });
 
@@ -1022,6 +1034,49 @@ export class BotService {
     }
   };
 
-  // // method to get all airdrops from a chain
-  // fetchByChain = async (chain: string) => {};
+  // method to get all airdrops from a chain
+  fetchByChain = async (chain: string, chatId: string) => {
+    try {
+      const airdrops = await this.databaseService.airDrops.findMany({
+        where: { network: chain },
+      });
+
+      if (airdrops) {
+        const message = await this.sendMessageToUser(
+          chatId,
+          `${chain} Airdrops 👇`,
+        );
+        if (message) {
+          const chainAirdrops = airdrops.map(async (airdrop) => {
+            const options = {
+              wordwrap: 130,
+              // ...
+            };
+            const ConvertedText = convert(airdrop.description, options);
+
+            return await this.sendAirdropDetails(
+              chatId,
+              airdrop.id,
+              airdrop.imageUrl,
+              airdrop.name,
+              airdrop.network,
+              ConvertedText,
+              airdrop.category,
+              airdrop.steps,
+              airdrop.cost,
+            );
+          });
+          return chainAirdrops;
+        }
+        return;
+      } else {
+        return await this.sendMessageToUser(
+          chatId,
+          `There is no ${chain} airdrops`,
+        );
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 }

@@ -49,7 +49,7 @@ export declare class BotService {
     sendMenu: (chatId: string) => Promise<TelegramBot.Message>;
     checkDone: (chatId: string, userId: number) => Promise<TelegramBot.Message>;
     handleAirdropCommands: (msg: any) => Promise<TelegramBot.Message>;
-    handleButtonCommands: (query: any) => Promise<TelegramBot.Message>;
+    handleButtonCommands: (query: any) => Promise<TelegramBot.Message | Promise<TelegramBot.Message>[]>;
     sendAirdropDetails: (chatId: string, airdropId: number, imageUrl: string, airdropName: string, network?: string, details?: string, category?: string, steps?: string, cost?: string) => Promise<TelegramBot.Message>;
     sendWishListAirdropDetails: (chatId: string, airdropId: number, imageUrl: string, airdropName: string, network?: string, details?: string, category?: string, steps?: string, cost?: string) => Promise<TelegramBot.Message>;
     sendHottestAirdrops: (chatId: string) => Promise<Promise<TelegramBot.Message>[]>;
@@ -63,4 +63,5 @@ export declare class BotService {
     } | Prisma.BatchPayload>;
     fetchChains: () => Promise<string[]>;
     sendAvailableChains: (chatId: string) => Promise<TelegramBot.Message | "empty chains">;
+    fetchByChain: (chain: string, chatId: string) => Promise<TelegramBot.Message | Promise<TelegramBot.Message>[]>;
 }
