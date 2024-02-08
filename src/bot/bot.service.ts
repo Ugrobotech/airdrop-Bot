@@ -36,6 +36,7 @@ export class BotService {
         { text: 'Potential 💡', callback_data: '/potential' },
         { text: 'Latest 📅', callback_data: '/latest' },
       ],
+      [{ text: 'Find airdrops by Chain 🔗', callback_data: '/chains' }],
       [
         { text: 'Subscribe 🔄', callback_data: 'subscribe' },
         { text: 'Unsubscribe ❌', callback_data: 'unsubscribe' },
@@ -54,7 +55,7 @@ export class BotService {
         // Send a message with the inline keyboard
         this.bot.sendMessage(
           msg.chat.id,
-          'Invalid command, please Choose an option:',
+          '🚫 Invalid command, please Choose an option:',
           {
             reply_markup: replyMarkup,
           },
@@ -272,6 +273,7 @@ export class BotService {
       [{ text: 'Hottest 🔥 Airdrops', callback_data: '/hottest' }],
       [{ text: 'Potential 💡 Airdrops', callback_data: '/potential' }],
       [{ text: 'Latest  📅  Airdrops', callback_data: '/latest' }],
+      [{ text: 'Find airdrops by Chain 🔗', callback_data: '/chains' }],
       [{ text: 'view wishList 🛒', callback_data: '/view_wishlist' }],
     ];
 
@@ -437,12 +439,19 @@ export class BotService {
         case '/hottest':
           const hottest = await this.sendHottestAirdrops(chatId);
           if (hottest) break;
+          break;
         case '/potential':
           const potential = await this.sendPotentialAirdrops(chatId);
           if (potential) break;
+          break;
         case '/latest':
           const latest = await this.sendLatestAirdrops(chatId);
           if (latest) break;
+          break;
+        case '/chains':
+          const chains = await this.sendAvailableChains(chatId);
+          if (chains) break;
+          break;
         case '/subscribe':
           const suscribed = await this.updateUser(msg.chat.username, {
             subscribed: true,
@@ -486,6 +495,7 @@ export class BotService {
               },
             ],
             [{ text: 'Latest  📅  Airdrops', callback_data: '/latest' }],
+            [{ text: 'Find airdrops by Chain 🔗', callback_data: '/chains' }],
             [{ text: 'view wishList 🛒', callback_data: '/view_wishlist' }],
           ];
 
@@ -554,6 +564,10 @@ export class BotService {
         case '/latest':
           const latest = await this.sendLatestAirdrops(chatId);
           if (latest) break;
+          break;
+        case '/chains':
+          const chains = await this.sendAvailableChains(chatId);
+          if (chains) break;
           break;
         case '/subscribe':
           const suscribed = await this.updateUser(query.message.chat.username, {
@@ -666,6 +680,7 @@ export class BotService {
               },
             ],
             [{ text: 'Latest  📅  Airdrops', callback_data: '/latest' }],
+            [{ text: 'Find airdrops by Chain 🔗', callback_data: '/chains' }],
             [{ text: 'view wishList 🛒', callback_data: '/view_wishlist' }],
           ];
 
@@ -975,11 +990,38 @@ export class BotService {
 
     const airdrops = await this.databaseService.airDrops.findMany();
 
-    const chains = airdrops.map((airdrop) => {
-      return airdrop.network;
-    });
+    // Extracting unique networks using Set and map
+    const chains = [...new Set(airdrops.map((airdrop) => airdrop.network))];
+    return chains;
   };
 
   // method to get all airdrops from a chain
-  fetchByChain = async (chain: string) => {};
+  sendAvailableChains = async (chatId: string) => {
+    try {
+      const chains = await this.fetchChains();
+      if (chains) {
+        // create a Kyeboard from the available chains
+        const keyboard = chains.map((chain) => {
+          return [
+            { text: `${chain} chain 🔗 Airdrops`, callback_data: `/${chain}` },
+          ];
+        });
+
+        // set up the keyboard markup
+        const replyMarkup = {
+          inline_keyboard: keyboard,
+        };
+
+        return this.bot.sendMessage(chatId, '👇 Available chains:', {
+          reply_markup: replyMarkup,
+        });
+      }
+      return 'empty chains';
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // // method to get all airdrops from a chain
+  // fetchByChain = async (chain: string) => {};
 }

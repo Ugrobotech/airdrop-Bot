@@ -61,4 +61,6 @@ export declare class BotService {
         ownerId: number;
         airdropId: number;
     } | Prisma.BatchPayload>;
+    fetchChains: () => Promise<string[]>;
+    sendAvailableChains: (chatId: string) => Promise<TelegramBot.Message | "empty chains">;
 }
