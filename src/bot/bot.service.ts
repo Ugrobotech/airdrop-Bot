@@ -88,6 +88,10 @@ export class BotService {
       }
     } catch (error) {
       console.error(error);
+      return await this.sendMessageToUser(
+        msg.chat.id,
+        `Processing command faled, please try again`,
+      );
     }
   };
   // Method to  save a new userdata to the database
@@ -576,60 +580,88 @@ export class BotService {
           if (chains) break;
           break;
         case '/subscribe':
-          const suscribed = await this.updateUser(query.message.chat.username, {
-            subscribed: true,
-          });
-          if (suscribed) {
+          try {
+            const suscribed = await this.updateUser(
+              query.message.chat.username,
+              {
+                subscribed: true,
+              },
+            );
+            if (suscribed) {
+              return await this.sendMessageToUser(
+                chatId,
+                'you have successfully subscribed to getting notified of our services',
+              );
+            }
+          } catch (error) {
             return await this.sendMessageToUser(
               chatId,
-              'you have successfully subscribed to getting notified of our services',
+              `Processing command faled, please try again`,
             );
           }
 
           break;
         case '/unsubscribe':
-          const unsubscribed = await this.updateUser(query.msg.chat.username, {
-            subscribed: false,
-          });
-          if (unsubscribed) {
+          try {
+            const unsubscribed = await this.updateUser(
+              query.msg.chat.username,
+              {
+                subscribed: false,
+              },
+            );
+            if (unsubscribed) {
+              return await this.sendMessageToUser(
+                chatId,
+                'You have successfuly unsunscribed from our services',
+              );
+              break;
+            }
+          } catch (error) {
             return await this.sendMessageToUser(
               chatId,
-              'You have successfuly unsunscribed from our services',
+              `Processing command faled, please try again`,
             );
-            break;
           }
+
           break;
 
         case '/add_to_wishlist':
-          // get the userId first
-          const userDbId = await this.databaseService.user.findFirst({
-            where: { chat_id: chatId },
-          });
-          if (userDbId) {
-            try {
-              console.log(userDbId);
-              const addToWishlist = await this.saveToWishlist(
-                userDbId.id,
-                airdropId,
-              );
-              if (addToWishlist && addToWishlist !== 'exist') {
-                return this.bot.sendMessage(
-                  chatId,
-                  '✅ Successfully added to Wishlist',
+          try {
+            // get the userId first
+            const userDbId = await this.databaseService.user.findFirst({
+              where: { chat_id: chatId },
+            });
+            if (userDbId) {
+              try {
+                console.log(userDbId);
+                const addToWishlist = await this.saveToWishlist(
+                  userDbId.id,
+                  airdropId,
                 );
-              } else if (addToWishlist === 'exist') {
-                return this.bot.sendMessage(
-                  chatId,
-                  '👍 Airdrop already in your wishlist',
-                );
-              } else {
-                return this.bot.sendMessage(
-                  chatId,
-                  '❌ Sorry there was an error while adding to wishlist',
-                );
-              }
-            } catch (error) {}
-            break;
+                if (addToWishlist && addToWishlist !== 'exist') {
+                  return this.bot.sendMessage(
+                    chatId,
+                    '✅ Successfully added to Wishlist',
+                  );
+                } else if (addToWishlist === 'exist') {
+                  return this.bot.sendMessage(
+                    chatId,
+                    '👍 Airdrop already in your wishlist',
+                  );
+                } else {
+                  return this.bot.sendMessage(
+                    chatId,
+                    '❌ Sorry there was an error while adding to wishlist',
+                  );
+                }
+              } catch (error) {}
+              break;
+            }
+          } catch (error) {
+            return await this.sendMessageToUser(
+              chatId,
+              `Processing command faled, please try again`,
+            );
           }
 
           break;
@@ -640,36 +672,44 @@ export class BotService {
           break;
 
         case '/removefrom_wishlist':
-          const userDbId3 = await this.databaseService.user.findFirst({
-            where: { chat_id: chatId },
-          });
-          if (userDbId3) {
-            try {
-              const airdrop = await this.removeFromWishlist(
-                airdropId,
-                userDbId3.id,
-              );
-              console.log('airdrop to del :', airdrop);
-              if (airdrop) {
-                return this.bot.sendMessage(
+          try {
+            const userDbId3 = await this.databaseService.user.findFirst({
+              where: { chat_id: chatId },
+            });
+            if (userDbId3) {
+              try {
+                const airdrop = await this.removeFromWishlist(
+                  airdropId,
+                  userDbId3.id,
                   chatId,
-                  '✅ Successfully removed from Wishlist',
                 );
-              } else if (airdrop == null) {
-                return this.bot.sendMessage(
-                  chatId,
-                  '❓ Sorry the airdrop is not in your wishlist',
-                );
-              } else {
-                return this.bot.sendMessage(
-                  chatId,
-                  '❌ Sorry there was an error try again',
-                );
+                console.log('airdrop to del :', airdrop);
+                if (airdrop) {
+                  return this.bot.sendMessage(
+                    chatId,
+                    '✅ Successfully removed from Wishlist',
+                  );
+                } else if (airdrop == null) {
+                  return this.bot.sendMessage(
+                    chatId,
+                    '❓ Sorry the airdrop is not in your wishlist',
+                  );
+                } else {
+                  return this.bot.sendMessage(
+                    chatId,
+                    '❌ Sorry there was an error try again',
+                  );
+                }
+              } catch (error) {
+                console.log(error);
               }
-            } catch (error) {
-              console.log(error);
+              break;
             }
-            break;
+          } catch (error) {
+            return await this.sendMessageToUser(
+              chatId,
+              `Processing command faled, please try again`,
+            );
           }
 
           break;
@@ -753,6 +793,10 @@ export class BotService {
       }
     } catch (error) {
       console.error(error);
+      return await this.sendMessageToUser(
+        chatId,
+        `Processing command faled, please try again`,
+      );
     }
   };
 
@@ -802,6 +846,10 @@ export class BotService {
       }
     } catch (error) {
       console.error(error);
+      return await this.sendMessageToUser(
+        chatId,
+        `Processing command faled, please try again`,
+      );
     }
   };
 
@@ -839,6 +887,10 @@ export class BotService {
       return;
     } catch (error) {
       console.error(error);
+      return await this.sendMessageToUser(
+        chatId,
+        `Processing command faled, please try again`,
+      );
     }
   };
 
@@ -875,6 +927,10 @@ export class BotService {
       return;
     } catch (error) {
       console.error(error);
+      return await this.sendMessageToUser(
+        chatId,
+        `Processing command faled, please try again`,
+      );
     }
   };
 
@@ -911,6 +967,10 @@ export class BotService {
       return;
     } catch (error) {
       console.error(error);
+      return await this.sendMessageToUser(
+        chatId,
+        `Processing command faled, please try again`,
+      );
     }
   };
 
@@ -961,6 +1021,10 @@ export class BotService {
       return;
     } catch (error) {
       console.error(error);
+      return await this.sendMessageToUser(
+        chatId.toString(),
+        `Processing command faled, please try again`,
+      );
     }
   };
 
@@ -974,7 +1038,11 @@ export class BotService {
   // };
 
   // method for users to remove aidrop to wishlist
-  removeFromWishlist = async (airdrop_Id: number, owner_Id: number) => {
+  removeFromWishlist = async (
+    airdrop_Id: number,
+    owner_Id: number,
+    chatId: string,
+  ) => {
     try {
       const exist = await this.databaseService.wishlists.findFirst({
         where: { airdropId: airdrop_Id, ownerId: owner_Id },
@@ -987,18 +1055,27 @@ export class BotService {
       } else {
         return exist;
       }
-    } catch (error) {}
+    } catch (error) {
+      return await this.sendMessageToUser(
+        chatId,
+        `Processing command faled, please try again`,
+      );
+    }
   };
 
   // method to fetch airdrop chains
   fetchChains = async () => {
-    // const chains: string[] = [];
+    try {
+      // const chains: string[] = [];
 
-    const airdrops = await this.databaseService.airDrops.findMany();
+      const airdrops = await this.databaseService.airDrops.findMany();
 
-    // Extracting unique networks using Set and map
-    const chains = [...new Set(airdrops.map((airdrop) => airdrop.network))];
-    return chains;
+      // Extracting unique networks using Set and map
+      const chains = [...new Set(airdrops.map((airdrop) => airdrop.network))];
+      return chains;
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   // method to get all airdrops from a chain
@@ -1031,6 +1108,10 @@ export class BotService {
       return 'empty chains';
     } catch (error) {
       console.log(error);
+      return await this.sendMessageToUser(
+        chatId,
+        `Processing command faled, please try again`,
+      );
     }
   };
 
@@ -1077,6 +1158,10 @@ export class BotService {
       }
     } catch (error) {
       console.log(error);
+      return await this.sendMessageToUser(
+        chatId,
+        `Processing command faled, please try again`,
+      );
     }
   };
 }
