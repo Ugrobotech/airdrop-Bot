@@ -714,7 +714,6 @@ export class BotService {
 
           break;
 
-        // Add more cases for other airdrop categories as needed
         default:
           // Handle unknown commands or provide instructions
           const keyboard = [
