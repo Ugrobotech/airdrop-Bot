@@ -862,26 +862,33 @@ export class BotService {
 
       if (message) {
         const hottestAirDrops = await this.fetchAirdrops('HOTTEST');
-        const hotDrops = hottestAirDrops.map(async (airdrop) => {
-          const options = {
-            wordwrap: 130,
-            // ...
-          };
-          const ConvertedText = convert(airdrop.description, options);
+        if (hottestAirDrops.length !== 0) {
+          const hotDrops = hottestAirDrops.map(async (airdrop) => {
+            const options = {
+              wordwrap: 130,
+              // ...
+            };
+            const ConvertedText = convert(airdrop.description, options);
 
-          return await this.sendAirdropDetails(
+            return await this.sendAirdropDetails(
+              chatId,
+              airdrop.id,
+              airdrop.imageUrl,
+              airdrop.name,
+              airdrop.network,
+              ConvertedText,
+              airdrop.category,
+              airdrop.steps,
+              airdrop.cost,
+            );
+          });
+          return hotDrops;
+        } else {
+          return await this.sendMessageToUser(
             chatId,
-            airdrop.id,
-            airdrop.imageUrl,
-            airdrop.name,
-            airdrop.network,
-            ConvertedText,
-            airdrop.category,
-            airdrop.steps,
-            airdrop.cost,
+            'Sorry there is no airdrop in this category',
           );
-        });
-        return hotDrops;
+        }
       }
       return;
     } catch (error) {
@@ -902,26 +909,33 @@ export class BotService {
       );
       if (message) {
         const potentialAirDrops = await this.fetchAirdrops('POTENTIAL');
-        const potDrops = potentialAirDrops.map(async (airdrop) => {
-          const options = {
-            wordwrap: 130,
-            // ...
-          };
-          const ConvertedText = convert(airdrop.description, options);
-          return await this.sendAirdropDetails(
-            chatId,
-            airdrop.id,
-            airdrop.imageUrl,
-            airdrop.name,
-            airdrop.network,
-            ConvertedText,
-            airdrop.category,
-            airdrop.steps,
-            airdrop.cost,
-          );
-        });
+        if (potentialAirDrops.length !== 0) {
+          const potDrops = potentialAirDrops.map(async (airdrop) => {
+            const options = {
+              wordwrap: 130,
+              // ...
+            };
+            const ConvertedText = convert(airdrop.description, options);
+            return await this.sendAirdropDetails(
+              chatId,
+              airdrop.id,
+              airdrop.imageUrl,
+              airdrop.name,
+              airdrop.network,
+              ConvertedText,
+              airdrop.category,
+              airdrop.steps,
+              airdrop.cost,
+            );
+          });
 
-        return potDrops;
+          return potDrops;
+        } else {
+          return await this.sendMessageToUser(
+            chatId,
+            'Sorry there is no airdrop in this category',
+          );
+        }
       }
       return;
     } catch (error) {
@@ -942,26 +956,32 @@ export class BotService {
       );
       if (message) {
         const latestAirDrops = await this.fetchAirdrops('LATEST');
-
-        const latestDrops = latestAirDrops.map(async (airdrop) => {
-          const options = {
-            wordwrap: 130,
-            // ...
-          };
-          const ConvertedText = convert(airdrop.description, options);
-          return await this.sendAirdropDetails(
+        if (latestAirDrops.length !== 0) {
+          const latestDrops = latestAirDrops.map(async (airdrop) => {
+            const options = {
+              wordwrap: 130,
+              // ...
+            };
+            const ConvertedText = convert(airdrop.description, options);
+            return await this.sendAirdropDetails(
+              chatId,
+              airdrop.id,
+              airdrop.imageUrl,
+              airdrop.name,
+              airdrop.network,
+              ConvertedText,
+              airdrop.category,
+              airdrop.steps,
+              airdrop.cost,
+            );
+          });
+          return latestDrops;
+        } else {
+          return await this.sendMessageToUser(
             chatId,
-            airdrop.id,
-            airdrop.imageUrl,
-            airdrop.name,
-            airdrop.network,
-            ConvertedText,
-            airdrop.category,
-            airdrop.steps,
-            airdrop.cost,
+            'Sorry there is no airdrop in this category',
           );
-        });
-        return latestDrops;
+        }
       }
       return;
     } catch (error) {
@@ -1061,7 +1081,6 @@ export class BotService {
       );
     }
   };
-
   // method to fetch airdrop chains
   fetchChains = async () => {
     try {
