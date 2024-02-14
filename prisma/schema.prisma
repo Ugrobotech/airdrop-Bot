@@ -24,9 +24,9 @@ model User {
 
 model Wishlists {
   id        Int      @id @default(autoincrement())
-  owner     User     @relation(fields: [ownerId], references: [id])
+  owner     User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   ownerId   Int // relation scalar field  (used in the `@relation` attribute above)
-  airdrop   AirDrops @relation(fields: [airdropId], references: [id])
+  airdrop   AirDrops @relation(fields: [airdropId], references: [id], onDelete: Cascade)
   airdropId Int
 }
 
