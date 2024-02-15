@@ -196,17 +196,21 @@ export class BotService {
               '⚠️  New Airdrop alert 👇',
             );
             if (alert) {
-              const ConvertedText = convert(message.description, options);
+              const ConvertedDescription = convert(
+                message.description,
+                options,
+              );
+              const ConvertedSteps = convert(message.description, options);
 
               return await this.sendAirdropDetails(
                 user.chat_id.toString(),
                 message.id,
                 message.imageUrl,
                 message.name,
-                // message.network,
-                ConvertedText,
+                message.network,
+                ConvertedDescription,
                 message.category,
-                message.steps,
+                ConvertedSteps,
                 message.cost,
               );
             }
@@ -246,16 +250,20 @@ export class BotService {
               '⚠️  Update alert 👇',
             );
             if (alert) {
-              const ConvertedText = convert(message.description, options);
+              const ConvertedDescription = convert(
+                message.description,
+                options,
+              );
+              const ConvertedSteps = convert(message.description, options);
               return await this.sendWishListAirdropDetails(
                 user.owner.chat_id.toString(),
                 message.id,
                 message.imageUrl,
                 message.name,
                 message.network,
-                ConvertedText,
+                ConvertedDescription,
                 message.category,
-                message.steps,
+                ConvertedSteps,
                 message.cost,
               );
             }
