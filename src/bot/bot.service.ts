@@ -868,7 +868,9 @@ export class BotService {
               wordwrap: 130,
               // ...
             };
-            const ConvertedText = convert(airdrop.description, options);
+            const ConvertedDescription = convert(airdrop.description, options);
+
+            const ConvertedSteps = convert(airdrop.steps, options);
 
             return await this.sendAirdropDetails(
               chatId,
@@ -876,9 +878,9 @@ export class BotService {
               airdrop.imageUrl,
               airdrop.name,
               airdrop.network,
-              ConvertedText,
+              ConvertedDescription,
               airdrop.category,
-              airdrop.steps,
+              ConvertedSteps,
               airdrop.cost,
             );
           });
@@ -915,16 +917,18 @@ export class BotService {
               wordwrap: 130,
               // ...
             };
-            const ConvertedText = convert(airdrop.description, options);
+            const ConvertedDescription = convert(airdrop.description, options);
+
+            const ConvertedSteps = convert(airdrop.steps, options);
             return await this.sendAirdropDetails(
               chatId,
               airdrop.id,
               airdrop.imageUrl,
               airdrop.name,
               airdrop.network,
-              ConvertedText,
+              ConvertedDescription,
               airdrop.category,
-              airdrop.steps,
+              ConvertedSteps,
               airdrop.cost,
             );
           });
@@ -962,16 +966,19 @@ export class BotService {
               wordwrap: 130,
               // ...
             };
-            const ConvertedText = convert(airdrop.description, options);
+            const ConvertedDescription = convert(airdrop.description, options);
+
+            const ConvertedSteps = convert(airdrop.steps, options);
+
             return await this.sendAirdropDetails(
               chatId,
               airdrop.id,
               airdrop.imageUrl,
               airdrop.name,
               airdrop.network,
-              ConvertedText,
+              ConvertedDescription,
               airdrop.category,
-              airdrop.steps,
+              ConvertedSteps,
               airdrop.cost,
             );
           });
@@ -1151,7 +1158,9 @@ export class BotService {
               wordwrap: 130,
               // ...
             };
-            const ConvertedText = convert(airdrop.description, options);
+            const ConvertedDescription = convert(airdrop.description, options);
+
+            const ConvertedSteps = convert(airdrop.steps, options);
 
             return await this.sendAirdropDetails(
               chatId,
@@ -1159,9 +1168,9 @@ export class BotService {
               airdrop.imageUrl,
               airdrop.name,
               airdrop.network,
-              ConvertedText,
+              ConvertedDescription,
               airdrop.category,
-              airdrop.steps,
+              ConvertedSteps,
               airdrop.cost,
             );
           });

@@ -6,7 +6,7 @@ export declare class BotService {
     private readonly bot;
     private logger;
     constructor(databaseService: DatabaseService);
-    onReceiveMessage: (msg: any) => Promise<void>;
+    onReceiveMessage: (msg: any) => Promise<TelegramBot.Message>;
     saveToDB(saveUserDto: Prisma.UserCreateInput): Promise<{
         id: number;
         username: string;
@@ -52,16 +52,16 @@ export declare class BotService {
     handleButtonCommands: (query: any) => Promise<TelegramBot.Message | Promise<TelegramBot.Message>[]>;
     sendAirdropDetails: (chatId: string, airdropId: number, imageUrl: string, airdropName: string, network?: string, details?: string, category?: string, steps?: string, cost?: string) => Promise<TelegramBot.Message>;
     sendWishListAirdropDetails: (chatId: string, airdropId: number, imageUrl: string, airdropName: string, network?: string, details?: string, category?: string, steps?: string, cost?: string) => Promise<TelegramBot.Message>;
-    sendHottestAirdrops: (chatId: string) => Promise<Promise<TelegramBot.Message>[]>;
-    sendPotentialAirdrops: (chatId: string) => Promise<Promise<TelegramBot.Message>[]>;
-    sendLatestAirdrops: (chatId: string) => Promise<Promise<TelegramBot.Message>[]>;
+    sendHottestAirdrops: (chatId: string) => Promise<TelegramBot.Message | Promise<TelegramBot.Message>[]>;
+    sendPotentialAirdrops: (chatId: string) => Promise<TelegramBot.Message | Promise<TelegramBot.Message>[]>;
+    sendLatestAirdrops: (chatId: string) => Promise<TelegramBot.Message | Promise<TelegramBot.Message>[]>;
     sendwishListAirdrops: (chatId: number) => Promise<TelegramBot.Message | Promise<TelegramBot.Message>[]>;
-    removeFromWishlist: (airdrop_Id: number, owner_Id: number) => Promise<{
+    removeFromWishlist: (airdrop_Id: number, owner_Id: number, chatId: string) => Promise<TelegramBot.Message | {
         id: number;
         ownerId: number;
         airdropId: number;
     } | Prisma.BatchPayload>;
     fetchChains: () => Promise<string[]>;
-    sendAvailableChains: (chatId: string) => Promise<TelegramBot.Message | "empty chains">;
+    sendAvailableChains: (chatId: string) => Promise<TelegramBot.Message>;
     fetchByChain: (chain: string, chatId: string) => Promise<TelegramBot.Message | Promise<TelegramBot.Message>[]>;
 }
