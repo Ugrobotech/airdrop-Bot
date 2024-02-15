@@ -1022,19 +1022,22 @@ export class BotService {
               wordwrap: 130,
               // ...
             };
-            const ConvertedText = convert(
+            const ConvertedDescription = convert(
               airdrops.airdrop.description,
               options,
             );
+
+            const ConvertedSteps = convert(airdrops.airdrop.steps, options);
+
             return await this.sendWishListAirdropDetails(
               chatId.toString(),
               airdrops.airdrop.id,
               airdrops.airdrop.imageUrl,
               airdrops.airdrop.name,
               airdrops.airdrop.network,
-              ConvertedText,
+              ConvertedDescription,
               airdrops.airdrop.category,
-              airdrops.airdrop.steps,
+              ConvertedSteps,
               airdrops.airdrop.cost,
             );
           });
