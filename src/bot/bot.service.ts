@@ -38,8 +38,8 @@ export class BotService {
       ],
       [{ text: 'Find airdrops by Chain 🔗', callback_data: '/chains' }],
       [
-        { text: 'Subscribe 🔄', callback_data: 'subscribe' },
-        { text: 'Unsubscribe ❌', callback_data: 'unsubscribe' },
+        { text: 'Subscribe 🔄', callback_data: '/subscribe' },
+        { text: 'Unsubscribe ❌', callback_data: '/unsubscribe' },
       ],
       [{ text: 'view wishList 🛒', callback_data: '/view_wishlist' }],
     ];
@@ -90,7 +90,7 @@ export class BotService {
       console.error(error);
       return await this.sendMessageToUser(
         msg.chat.id,
-        `Processing command faled, please try again`,
+        `Processing command failed, please try again`,
       );
     }
   };
@@ -596,7 +596,7 @@ export class BotService {
           } catch (error) {
             return await this.sendMessageToUser(
               chatId,
-              `Processing command faled, please try again`,
+              `Processing command failed, please try again`,
             );
           }
 
@@ -619,7 +619,7 @@ export class BotService {
           } catch (error) {
             return await this.sendMessageToUser(
               chatId,
-              `Processing command faled, please try again`,
+              `Processing command failed, please try again`,
             );
           }
 
@@ -660,7 +660,7 @@ export class BotService {
           } catch (error) {
             return await this.sendMessageToUser(
               chatId,
-              `Processing command faled, please try again`,
+              `Processing command failed, please try again`,
             );
           }
 
@@ -708,7 +708,7 @@ export class BotService {
           } catch (error) {
             return await this.sendMessageToUser(
               chatId,
-              `Processing command faled, please try again`,
+              `Processing command failed, please try again`,
             );
           }
 
@@ -794,7 +794,7 @@ export class BotService {
       console.error(error);
       return await this.sendMessageToUser(
         chatId,
-        `Processing command faled, please try again`,
+        `Processing command failed, please try again`,
       );
     }
   };
@@ -847,7 +847,7 @@ export class BotService {
       console.error(error);
       return await this.sendMessageToUser(
         chatId,
-        `Processing command faled, please try again`,
+        `Processing command failed, please try again`,
       );
     }
   };
@@ -895,7 +895,7 @@ export class BotService {
       console.error(error);
       return await this.sendMessageToUser(
         chatId,
-        `Processing command faled, please try again`,
+        `Processing command failed, please try again`,
       );
     }
   };
@@ -942,7 +942,7 @@ export class BotService {
       console.error(error);
       return await this.sendMessageToUser(
         chatId,
-        `Processing command faled, please try again`,
+        `Processing command failed, please try again`,
       );
     }
   };
@@ -988,7 +988,7 @@ export class BotService {
       console.error(error);
       return await this.sendMessageToUser(
         chatId,
-        `Processing command faled, please try again`,
+        `Processing command failed, please try again`,
       );
     }
   };
@@ -1042,7 +1042,7 @@ export class BotService {
       console.error(error);
       return await this.sendMessageToUser(
         chatId.toString(),
-        `Processing command faled, please try again`,
+        `Processing command failed, please try again`,
       );
     }
   };
@@ -1077,7 +1077,7 @@ export class BotService {
     } catch (error) {
       return await this.sendMessageToUser(
         chatId,
-        `Processing command faled, please try again`,
+        `Processing command failed, please try again`,
       );
     }
   };
@@ -1128,7 +1128,7 @@ export class BotService {
       console.log(error);
       return await this.sendMessageToUser(
         chatId,
-        `Processing command faled, please try again`,
+        `Processing command failed, please try again`,
       );
     }
   };
@@ -1178,7 +1178,7 @@ export class BotService {
       console.log(error);
       return await this.sendMessageToUser(
         chatId,
-        `Processing command faled, please try again`,
+        `Processing command failed, please try again`,
       );
     }
   };
