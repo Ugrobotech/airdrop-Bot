@@ -1100,7 +1100,7 @@ export class BotService {
   sendAvailableChains = async (chatId: string) => {
     try {
       const chains = await this.fetchChains();
-      if (chains) {
+      if (chains.length !== 0) {
         // create a Kyeboard from the available chains
         const keyboard = chains.map((chain) => {
           return [
