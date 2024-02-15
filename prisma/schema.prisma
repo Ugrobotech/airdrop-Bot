@@ -38,7 +38,7 @@ model AirDrops {
   category    Category
   steps       String
   cost        String
-  imageUrl    String      @default("https://ibb.co/L1Ps4jx")
+  imageUrl    String      @default("https://i.ibb.co/gJ7csqS/IMG-20240124-223836-500.png")
   Wishlist    Wishlists[]
 }
 
