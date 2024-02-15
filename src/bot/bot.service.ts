@@ -203,7 +203,7 @@ export class BotService {
                 message.id,
                 message.imageUrl,
                 message.name,
-                message.network,
+                // message.network,
                 ConvertedText,
                 message.category,
                 message.steps,
@@ -775,8 +775,7 @@ export class BotService {
       inline_keyboard: keyboard,
     };
     try {
-      const detailsMessage = `${airdropName}\n\n
-    ${network}.\n${details}.\n\n\t${steps}\n\n\tCost: ${cost}`;
+      const detailsMessage = `${airdropName}.\n\n${details}.\n\n\t${steps}\n\n\tCost: ${cost}`;
       // send without picture is imageurl is empty
       if (imageUrl) {
         return await this.sendPictureToUser(
@@ -828,8 +827,7 @@ export class BotService {
       inline_keyboard: keyboard,
     };
     try {
-      const detailsMessage = `${airdropName}\n\n
-    ${network}.\n${details}.\n\n\t${steps}\n\n\tCost: ${cost}`;
+      const detailsMessage = `${airdropName}.\n\n${details}.\n\n\t${steps}\n\n\tCost: ${cost}`;
       // send without picture is imageurl is empty
       if (imageUrl) {
         return await this.sendPictureToUser(
@@ -877,7 +875,7 @@ export class BotService {
               airdrop.id,
               airdrop.imageUrl,
               airdrop.name,
-              // airdrop.network,
+              airdrop.network,
               ConvertedDescription,
               airdrop.category,
               ConvertedSteps,
@@ -925,7 +923,7 @@ export class BotService {
               airdrop.id,
               airdrop.imageUrl,
               airdrop.name,
-              // airdrop.network,
+              airdrop.network,
               ConvertedDescription,
               airdrop.category,
               ConvertedSteps,
@@ -975,7 +973,7 @@ export class BotService {
               airdrop.id,
               airdrop.imageUrl,
               airdrop.name,
-              // airdrop.network,
+              airdrop.network,
               ConvertedDescription,
               airdrop.category,
               ConvertedSteps,
@@ -1033,7 +1031,7 @@ export class BotService {
               airdrops.airdrop.id,
               airdrops.airdrop.imageUrl,
               airdrops.airdrop.name,
-              // airdrops.airdrop.network,
+              airdrops.airdrop.network,
               ConvertedText,
               airdrops.airdrop.category,
               airdrops.airdrop.steps,
@@ -1167,7 +1165,7 @@ export class BotService {
               airdrop.id,
               airdrop.imageUrl,
               airdrop.name,
-              // airdrop.network,
+              airdrop.network,
               ConvertedDescription,
               airdrop.category,
               ConvertedSteps,
