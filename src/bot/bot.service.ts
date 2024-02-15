@@ -1123,7 +1123,7 @@ export class BotService {
           reply_markup: replyMarkup,
         });
       }
-      return 'empty chains';
+      return this.bot.sendMessage(chatId, 'there is no airdrop available');
     } catch (error) {
       console.log(error);
       return await this.sendMessageToUser(
