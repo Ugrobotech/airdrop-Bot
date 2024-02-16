@@ -373,11 +373,12 @@ export class BotService {
   // function to check if a user have succefully suscribed and joined the group
   checkDone = async (chatId: string, userId: number) => {
     // Create inline keyboard with buttons
+    // 'https://t.me/CryptoJamil'
     const keyboard = [
       [
         {
           text: 'Subscribe to channel 💬',
-          url: 'https://t.me/CryptoJamil',
+          url: 'https://t.me/AIRDROPS_SCANBOT',
         },
       ],
       [{ text: 'Enable Notification 🔔', callback_data: '/subscribe' }],
@@ -392,7 +393,8 @@ export class BotService {
     try {
       //-1002136597023
       //-1002116374739 cryptoJamil
-      const groupId = -1002116374739;
+      //-1001981922591  scanbot
+      const groupId = -1001981922591;
       const user_Id = userId;
       console.log('user id :', user_Id);
       const chat_Id = +chatId;
