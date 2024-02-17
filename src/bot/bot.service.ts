@@ -799,10 +799,8 @@ export class BotService {
             replyMarkup,
           );
         } catch (error) {
-          // gases of long messages
-          return await this.bot.sendMessage(chatId, detailsMessage, {
-            reply_markup: replyMarkup,
-          });
+          console.log(error);
+          return await this.bot.sendMessage(chatId, 'error processing command');
         }
       } else {
         return await this.bot.sendMessage(chatId, detailsMessage, {
