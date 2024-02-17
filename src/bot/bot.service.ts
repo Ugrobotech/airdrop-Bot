@@ -205,8 +205,8 @@ export class BotService {
               return await this.sendAirdropDetails(
                 user.chat_id.toString(),
                 message.id,
-                message.imageUrl,
                 message.name,
+                message.imageUrl,
                 message.network,
                 ConvertedDescription,
                 message.category,
@@ -258,8 +258,8 @@ export class BotService {
               return await this.sendWishListAirdropDetails(
                 user.owner.chat_id.toString(),
                 message.id,
-                message.imageUrl,
                 message.name,
+                message.imageUrl,
                 message.network,
                 ConvertedDescription,
                 message.category,
@@ -760,8 +760,8 @@ export class BotService {
   sendAirdropDetails = async (
     chatId: string,
     airdropId: number,
-    imageUrl: string,
     airdropName: string,
+    imageUrl?: string,
     network?: string,
     details?: string,
     category?: string,
@@ -788,12 +788,19 @@ export class BotService {
       const detailsMessage = `${airdropName}.\n\n${details}.\n\n\t${steps}\n\n\tCost: ${cost}`;
       // send without picture is imageurl is empty
       if (imageUrl) {
-        return await this.sendPictureToUser(
-          chatId,
-          imageUrl,
-          detailsMessage,
-          replyMarkup,
-        );
+        try {
+          return await this.sendPictureToUser(
+            chatId,
+            imageUrl,
+            detailsMessage,
+            replyMarkup,
+          );
+        } catch (error) {
+          // gases of long messages
+          return await this.bot.sendMessage(chatId, detailsMessage, {
+            reply_markup: replyMarkup,
+          });
+        }
       } else {
         return await this.bot.sendMessage(chatId, detailsMessage, {
           reply_markup: replyMarkup,
@@ -812,8 +819,8 @@ export class BotService {
   sendWishListAirdropDetails = async (
     chatId: string,
     airdropId: number,
-    imageUrl: string,
     airdropName: string,
+    imageUrl?: string,
     network?: string,
     details?: string,
     category?: string,
@@ -883,8 +890,8 @@ export class BotService {
             return await this.sendAirdropDetails(
               chatId,
               airdrop.id,
-              airdrop.imageUrl,
               airdrop.name,
+              airdrop.imageUrl,
               airdrop.network,
               ConvertedDescription,
               airdrop.category,
@@ -931,8 +938,8 @@ export class BotService {
             return await this.sendAirdropDetails(
               chatId,
               airdrop.id,
-              airdrop.imageUrl,
               airdrop.name,
+              airdrop.imageUrl,
               airdrop.network,
               ConvertedDescription,
               airdrop.category,
@@ -981,8 +988,8 @@ export class BotService {
             return await this.sendAirdropDetails(
               chatId,
               airdrop.id,
-              airdrop.imageUrl,
               airdrop.name,
+              airdrop.imageUrl,
               airdrop.network,
               ConvertedDescription,
               airdrop.category,
@@ -1042,8 +1049,8 @@ export class BotService {
             return await this.sendWishListAirdropDetails(
               chatId.toString(),
               airdrops.airdrop.id,
-              airdrops.airdrop.imageUrl,
               airdrops.airdrop.name,
+              airdrops.airdrop.imageUrl,
               airdrops.airdrop.network,
               ConvertedDescription,
               airdrops.airdrop.category,
@@ -1176,8 +1183,8 @@ export class BotService {
             return await this.sendAirdropDetails(
               chatId,
               airdrop.id,
-              airdrop.imageUrl,
               airdrop.name,
+              airdrop.imageUrl,
               airdrop.network,
               ConvertedDescription,
               airdrop.category,
