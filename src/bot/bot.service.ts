@@ -161,6 +161,9 @@ export class BotService {
       });
     } catch (error) {
       console.error(error);
+      return await this.bot.sendMessage(userId, message, {
+        reply_markup: markup,
+      });
     }
   };
 
@@ -1130,7 +1133,7 @@ export class BotService {
         const keyboard = chains.map((chain) => {
           return [
             {
-              text: `${chain} chain 🔗 Airdrops`,
+              text: `${chain} 🔗 Airdrops`,
               callback_data: JSON.stringify({
                 action: `/${chain}`,
                 chain: chain,
