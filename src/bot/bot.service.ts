@@ -348,7 +348,7 @@ export class BotService {
       [
         {
           text: 'Subscribe to channel 💬',
-          url: 'https://t.me/CryptoJamil',
+          url: 'https://t.me/AIRDROPS_SCANBOT',
         },
       ],
       [{ text: 'Enable Notification 🔔', callback_data: '/subscribe' }],
