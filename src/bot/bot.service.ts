@@ -159,6 +159,7 @@ export class BotService {
         caption: message,
         reply_markup: markup,
       });
+      return 'done';
     } catch (error) {
       console.log('caption error');
       // to send the image and writeups saperately
@@ -171,7 +172,8 @@ export class BotService {
         });
       };
       console.log(`calling function`);
-      return await sendSaperately();
+      await sendSaperately();
+      return 'done';
     }
   };
 
@@ -944,7 +946,7 @@ export class BotService {
             const ConvertedDescription = convert(airdrop.description, options);
 
             const ConvertedSteps = convert(airdrop.steps, options);
-            return await this.sendAirdropDetails(
+            const sent = await this.sendAirdropDetails(
               chatId,
               airdrop.id,
               airdrop.name,
@@ -955,6 +957,8 @@ export class BotService {
               ConvertedSteps,
               airdrop.cost,
             );
+            console.log(sent);
+            return sent;
           });
 
           return potDrops;
