@@ -161,6 +161,14 @@ export class BotService {
       });
     } catch (error) {
       console.error(error);
+      const sendOnlyImage = await this.bot.sendPhoto(userId, imageUrl, {
+        parse_mode: `HTML`,
+      });
+      if (sendOnlyImage) {
+        return await this.bot.sendMessage(userId, message, {
+          reply_markup: markup,
+        });
+      }
       return await this.bot.sendMessage(userId, message, {
         reply_markup: markup,
       });
