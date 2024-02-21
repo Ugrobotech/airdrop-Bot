@@ -888,7 +888,9 @@ export class BotService {
       if (message) {
         const hottestAirDrops = await this.fetchAirdrops('HOTTEST');
         if (hottestAirDrops.length !== 0) {
-          const hotDrops = hottestAirDrops.map(async (airdrop) => {
+          // using reduce and memo for async iterations
+          await hottestAirDrops.reduce(async (memo, airdrop) => {
+            const accumulatedValue = await memo;
             const options = {
               wordwrap: 130,
               // ...
@@ -896,8 +898,7 @@ export class BotService {
             const ConvertedDescription = convert(airdrop.description, options);
 
             const ConvertedSteps = convert(airdrop.steps, options);
-
-            return await this.sendAirdropDetails(
+            const sent = await this.sendAirdropDetails(
               chatId,
               airdrop.id,
               airdrop.name,
@@ -908,8 +909,9 @@ export class BotService {
               ConvertedSteps,
               airdrop.cost,
             );
-          });
-          return hotDrops;
+            // Accumulate the result for the next iteration
+            return accumulatedValue.concat(sent);
+          }, Promise.resolve([]));
         } else {
           return await this.sendMessageToUser(
             chatId,
@@ -987,7 +989,8 @@ export class BotService {
       if (message) {
         const latestAirDrops = await this.fetchAirdrops('LATEST');
         if (latestAirDrops.length !== 0) {
-          const latestDrops = latestAirDrops.map(async (airdrop) => {
+          await latestAirDrops.reduce(async (memo, airdrop) => {
+            const accumulatedValue = await memo;
             const options = {
               wordwrap: 130,
               // ...
@@ -995,8 +998,7 @@ export class BotService {
             const ConvertedDescription = convert(airdrop.description, options);
 
             const ConvertedSteps = convert(airdrop.steps, options);
-
-            return await this.sendAirdropDetails(
+            const sent = await this.sendAirdropDetails(
               chatId,
               airdrop.id,
               airdrop.name,
@@ -1007,8 +1009,9 @@ export class BotService {
               ConvertedSteps,
               airdrop.cost,
             );
-          });
-          return latestDrops;
+            // Accumulate the result for the next iteration
+            return accumulatedValue.concat(sent);
+          }, Promise.resolve([]));
         } else {
           return await this.sendMessageToUser(
             chatId,
@@ -1045,7 +1048,9 @@ export class BotService {
           if (wishListArray.length == 0) {
             return this.bot.sendMessage(chatId, '❓ Your wishlist is empty');
           }
-          const WishList = wishListArray.map(async (airdrops) => {
+          wishListArray.reduce(async (memo, airdrops) => {
+            const accumulatedValue = await memo;
+
             const options = {
               wordwrap: 130,
               // ...
@@ -1057,7 +1062,7 @@ export class BotService {
 
             const ConvertedSteps = convert(airdrops.airdrop.steps, options);
 
-            return await this.sendWishListAirdropDetails(
+            const sent = await this.sendWishListAirdropDetails(
               chatId.toString(),
               airdrops.airdrop.id,
               airdrops.airdrop.name,
@@ -1068,8 +1073,9 @@ export class BotService {
               ConvertedSteps,
               airdrops.airdrop.cost,
             );
-          });
-          return WishList;
+            // accumulate the result for the next iteration
+            return accumulatedValue.concat(sent);
+          }, Promise.resolve([]));
         }
         return;
       }
