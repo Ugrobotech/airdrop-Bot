@@ -168,10 +168,11 @@ export class BotService {
         return await this.bot.sendMessage(userId, message, {
           reply_markup: markup,
         });
+      } else {
+        return await this.bot.sendMessage(userId, message, {
+          reply_markup: markup,
+        });
       }
-      return await this.bot.sendMessage(userId, message, {
-        reply_markup: markup,
-      });
     }
   };
 
