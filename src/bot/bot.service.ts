@@ -944,7 +944,7 @@ export class BotService {
             const ConvertedDescription = convert(airdrop.description, options);
 
             const ConvertedSteps = convert(airdrop.steps, options);
-            return await this.sendAirdropDetails(
+            const sendDetail = await this.sendAirdropDetails(
               chatId,
               airdrop.id,
               airdrop.name,
@@ -955,6 +955,9 @@ export class BotService {
               ConvertedSteps,
               airdrop.cost,
             );
+            if (sendDetail) {
+              return;
+            }
           });
 
           return potDrops;
