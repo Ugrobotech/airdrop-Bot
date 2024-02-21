@@ -160,7 +160,7 @@ export class BotService {
         reply_markup: markup,
       });
     } catch (error) {
-      console.error(error);
+      console.error('caption error');
       // to send the image and writeups saperately
       const sendSaperately = async () => {
         await this.bot.sendPhoto(userId, imageUrl, {
@@ -170,8 +170,8 @@ export class BotService {
           reply_markup: markup,
         });
       };
-
-      return sendSaperately();
+      console.log(`calling function`);
+      return await sendSaperately();
     }
   };
 
