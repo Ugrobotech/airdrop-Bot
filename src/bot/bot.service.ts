@@ -811,12 +811,17 @@ export class BotService {
           if (DataSent === 'done') {
             return DataSent;
           } else {
-            await this.bot.sendPhoto(chatId, imageUrl, {
-              parse_mode: `HTML`,
-            });
-            return await this.bot.sendMessage(chatId, detailsMessage, {
-              reply_markup: replyMarkup,
-            });
+            const sendSaperately = async () => {
+              await this.bot.sendPhoto(chatId, imageUrl, {
+                parse_mode: `HTML`,
+              });
+              await this.bot.sendMessage(chatId, detailsMessage, {
+                reply_markup: replyMarkup,
+              });
+            };
+            console.log(`calling function`);
+            await sendSaperately();
+            return;
           }
         } catch (error) {
           console.log(error);
