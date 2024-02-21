@@ -154,26 +154,24 @@ export class BotService {
     markup?: TelegramBot.InlineKeyboardMarkup,
   ) => {
     try {
-      await this.bot.sendPhoto(userId, imageUrl, {
+      return await this.bot.sendPhoto(userId, imageUrl, {
         parse_mode: 'HTML',
         caption: message,
         reply_markup: markup,
       });
-      return 'done';
     } catch (error) {
       console.log('caption error');
       // to send the image and writeups saperately
-      // const sendSaperately = async () => {
-      //   await this.bot.sendPhoto(userId, imageUrl, {
-      //     parse_mode: `HTML`,
-      //   });
-      //   await this.bot.sendMessage(userId, message, {
-      //     reply_markup: markup,
-      //   });
-      // };
-      // console.log(`calling function`);
-      // await sendSaperately();
-      // return 'done';
+      const sendSaperately = async () => {
+        await this.bot.sendPhoto(userId, imageUrl, {
+          parse_mode: `HTML`,
+        });
+        await this.bot.sendMessage(userId, message, {
+          reply_markup: markup,
+        });
+      };
+      console.log(`calling function`);
+      return await sendSaperately();
     }
   };
 
@@ -802,27 +800,12 @@ export class BotService {
       // send without picture is imageurl is empty
       if (imageUrl) {
         try {
-          const DataSent = await this.sendPictureToUser(
+          return await this.sendPictureToUser(
             chatId,
             imageUrl,
             detailsMessage,
             replyMarkup,
           );
-          if (DataSent === 'done') {
-            return DataSent;
-          } else {
-            const sendSaperately = async () => {
-              await this.bot.sendPhoto(chatId, imageUrl, {
-                parse_mode: `HTML`,
-              });
-              await this.bot.sendMessage(chatId, detailsMessage, {
-                reply_markup: replyMarkup,
-              });
-            };
-            console.log(`calling function`);
-            await sendSaperately();
-            return;
-          }
         } catch (error) {
           console.log(error);
           return await this.bot.sendMessage(chatId, 'error processing command');
@@ -953,28 +936,8 @@ export class BotService {
       if (message) {
         const potentialAirDrops = await this.fetchAirdrops('POTENTIAL');
         if (potentialAirDrops.length !== 0) {
-          // const potDrops = potentialAirDrops.map(async (airdrop) => {
-          //   const options = {
-          //     wordwrap: 130,
-          //     // ...
-          //   };
-          //   const ConvertedDescription = convert(airdrop.description, options);
-
-          //   const ConvertedSteps = convert(airdrop.steps, options);
-          //   const sent = await this.sendAirdropDetails(
-          //     chatId,
-          //     airdrop.id,
-          //     airdrop.name,
-          //     airdrop.imageUrl,
-          //     airdrop.network,
-          //     ConvertedDescription,
-          //     airdrop.category,
-          //     ConvertedSteps,
-          //     airdrop.cost,
-          //   );
-          //   if (sent === 'done') return sent;
-          // });
-          for (const airdrop of potentialAirDrops) {
+          await potentialAirDrops.reduce(async (memo, airdrop) => {
+            const accumulatedValue = await memo;
             const options = {
               wordwrap: 130,
               // ...
@@ -993,8 +956,9 @@ export class BotService {
               ConvertedSteps,
               airdrop.cost,
             );
-            return sent;
-          }
+            // Accumulate the result for the next iteration
+            return accumulatedValue.concat(sent);
+          }, Promise.resolve([]));
         } else {
           return await this.sendMessageToUser(
             chatId,
