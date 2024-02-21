@@ -592,6 +592,7 @@ export class BotService {
         case '/potential':
           const potential = await this.sendPotentialAirdrops(chatId);
           if (potential) break;
+          break;
         case '/latest':
           const latest = await this.sendLatestAirdrops(chatId);
           if (latest) break;
