@@ -959,8 +959,7 @@ export class BotService {
               ConvertedSteps,
               airdrop.cost,
             );
-            console.log(sent);
-            return sent;
+            if (sent === 'done') return sent;
           });
 
           return potDrops;
