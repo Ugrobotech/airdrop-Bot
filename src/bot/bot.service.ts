@@ -160,7 +160,7 @@ export class BotService {
         reply_markup: markup,
       });
     } catch (error) {
-      console.error('caption error');
+      console.log('caption error');
       // to send the image and writeups saperately
       const sendSaperately = async () => {
         await this.bot.sendPhoto(userId, imageUrl, {
