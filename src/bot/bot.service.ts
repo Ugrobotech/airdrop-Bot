@@ -154,24 +154,24 @@ export class BotService {
     markup?: TelegramBot.InlineKeyboardMarkup,
   ) => {
     try {
-      const imageSent = await this.bot.sendPhoto(userId, imageUrl, {
+      return await this.bot.sendPhoto(userId, imageUrl, {
         parse_mode: 'HTML',
         caption: message,
         reply_markup: markup,
       });
-      if (!imageSent) {
-        return await this.bot.sendPhoto(userId, imageUrl, {
-          parse_mode: `HTML`,
-        });
-      }
     } catch (error) {
       console.error(error);
-      // await this.bot.sendPhoto(userId, imageUrl, {
-      //   parse_mode: `HTML`,
-      // });
-      // return await this.bot.sendMessage(userId, message, {
-      //   reply_markup: markup,
-      // });
+      // to send the image and writeups saperately
+      const sendSaperately = async () => {
+        await this.bot.sendPhoto(userId, imageUrl, {
+          parse_mode: `HTML`,
+        });
+        await this.bot.sendMessage(userId, message, {
+          reply_markup: markup,
+        });
+      };
+
+      return sendSaperately();
     }
   };
 
