@@ -974,7 +974,27 @@ export class BotService {
             );
             if (sent === 'done') return sent;
           });
+          for (const airdrop of potentialAirDrops) {
+            const options = {
+              wordwrap: 130,
+              // ...
+            };
+            const ConvertedDescription = convert(airdrop.description, options);
 
+            const ConvertedSteps = convert(airdrop.steps, options);
+            const sent = await this.sendAirdropDetails(
+              chatId,
+              airdrop.id,
+              airdrop.name,
+              airdrop.imageUrl,
+              airdrop.network,
+              ConvertedDescription,
+              airdrop.category,
+              ConvertedSteps,
+              airdrop.cost,
+            );
+            return sent;
+          }
           return potDrops;
         } else {
           return await this.sendMessageToUser(
