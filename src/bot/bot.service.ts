@@ -802,12 +802,14 @@ export class BotService {
       // send without picture is imageurl is empty
       if (imageUrl) {
         try {
-          return await this.sendPictureToUser(
+          const DataSent = await this.sendPictureToUser(
             chatId,
             imageUrl,
             detailsMessage,
             replyMarkup,
           );
+          console.log(DataSent);
+          return DataSent;
         } catch (error) {
           console.log(error);
           return await this.bot.sendMessage(chatId, 'error processing command');
