@@ -953,27 +953,27 @@ export class BotService {
       if (message) {
         const potentialAirDrops = await this.fetchAirdrops('POTENTIAL');
         if (potentialAirDrops.length !== 0) {
-          const potDrops = potentialAirDrops.map(async (airdrop) => {
-            const options = {
-              wordwrap: 130,
-              // ...
-            };
-            const ConvertedDescription = convert(airdrop.description, options);
+          // const potDrops = potentialAirDrops.map(async (airdrop) => {
+          //   const options = {
+          //     wordwrap: 130,
+          //     // ...
+          //   };
+          //   const ConvertedDescription = convert(airdrop.description, options);
 
-            const ConvertedSteps = convert(airdrop.steps, options);
-            const sent = await this.sendAirdropDetails(
-              chatId,
-              airdrop.id,
-              airdrop.name,
-              airdrop.imageUrl,
-              airdrop.network,
-              ConvertedDescription,
-              airdrop.category,
-              ConvertedSteps,
-              airdrop.cost,
-            );
-            if (sent === 'done') return sent;
-          });
+          //   const ConvertedSteps = convert(airdrop.steps, options);
+          //   const sent = await this.sendAirdropDetails(
+          //     chatId,
+          //     airdrop.id,
+          //     airdrop.name,
+          //     airdrop.imageUrl,
+          //     airdrop.network,
+          //     ConvertedDescription,
+          //     airdrop.category,
+          //     ConvertedSteps,
+          //     airdrop.cost,
+          //   );
+          //   if (sent === 'done') return sent;
+          // });
           for (const airdrop of potentialAirDrops) {
             const options = {
               wordwrap: 130,
@@ -995,7 +995,6 @@ export class BotService {
             );
             return sent;
           }
-          return potDrops;
         } else {
           return await this.sendMessageToUser(
             chatId,
