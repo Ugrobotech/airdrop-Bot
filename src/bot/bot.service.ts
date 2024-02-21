@@ -161,18 +161,12 @@ export class BotService {
       });
     } catch (error) {
       console.error(error);
-      const sendOnlyImage = await this.bot.sendPhoto(userId, imageUrl, {
+      await this.bot.sendPhoto(userId, imageUrl, {
         parse_mode: `HTML`,
       });
-      if (sendOnlyImage) {
-        return await this.bot.sendMessage(userId, message, {
-          reply_markup: markup,
-        });
-      } else {
-        return await this.bot.sendMessage(userId, message, {
-          reply_markup: markup,
-        });
-      }
+      return await this.bot.sendMessage(userId, message, {
+        reply_markup: markup,
+      });
     }
   };
 
@@ -956,9 +950,7 @@ export class BotService {
               ConvertedSteps,
               airdrop.cost,
             );
-            if (sendDetail) {
-              return;
-            }
+            return sendDetail;
           });
 
           return potDrops;
