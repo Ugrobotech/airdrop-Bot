@@ -1188,7 +1188,8 @@ export class BotService {
           `${chain} 🔗 Airdrops 👇`,
         );
         if (message) {
-          const chainAirdrops = airdrops.map(async (airdrop) => {
+          await airdrops.reduce(async (memo, airdrop) => {
+            const accumulatedValue = await memo;
             const options = {
               wordwrap: 130,
               // ...
@@ -1197,7 +1198,7 @@ export class BotService {
 
             const ConvertedSteps = convert(airdrop.steps, options);
 
-            return await this.sendAirdropDetails(
+            const sent = await this.sendAirdropDetails(
               chatId,
               airdrop.id,
               airdrop.name,
@@ -1208,8 +1209,9 @@ export class BotService {
               ConvertedSteps,
               airdrop.cost,
             );
-          });
-          return chainAirdrops;
+            // Accumulate the result for the next iteration
+            return accumulatedValue.concat(sent);
+          }, Promise.resolve([]));
         }
         return;
       } else {
