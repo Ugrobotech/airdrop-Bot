@@ -154,19 +154,24 @@ export class BotService {
     markup?: TelegramBot.InlineKeyboardMarkup,
   ) => {
     try {
-      return await this.bot.sendPhoto(userId, imageUrl, {
+      const imageSent = await this.bot.sendPhoto(userId, imageUrl, {
         parse_mode: 'HTML',
         caption: message,
         reply_markup: markup,
       });
+      if (!imageSent) {
+        return await this.bot.sendPhoto(userId, imageUrl, {
+          parse_mode: `HTML`,
+        });
+      }
     } catch (error) {
       console.error(error);
-      await this.bot.sendPhoto(userId, imageUrl, {
-        parse_mode: `HTML`,
-      });
-      return await this.bot.sendMessage(userId, message, {
-        reply_markup: markup,
-      });
+      // await this.bot.sendPhoto(userId, imageUrl, {
+      //   parse_mode: `HTML`,
+      // });
+      // return await this.bot.sendMessage(userId, message, {
+      //   reply_markup: markup,
+      // });
     }
   };
 
@@ -939,7 +944,7 @@ export class BotService {
             const ConvertedDescription = convert(airdrop.description, options);
 
             const ConvertedSteps = convert(airdrop.steps, options);
-            const sendDetail = await this.sendAirdropDetails(
+            return await this.sendAirdropDetails(
               chatId,
               airdrop.id,
               airdrop.name,
@@ -950,7 +955,6 @@ export class BotService {
               ConvertedSteps,
               airdrop.cost,
             );
-            return sendDetail;
           });
 
           return potDrops;
