@@ -154,7 +154,7 @@ export class BotService {
     markup?: TelegramBot.InlineKeyboardMarkup,
   ) => {
     try {
-      return await this.bot.sendPhoto(userId, imageUrl, {
+      await this.bot.sendPhoto(userId, imageUrl, {
         parse_mode: 'HTML',
         caption: message,
         reply_markup: markup,
