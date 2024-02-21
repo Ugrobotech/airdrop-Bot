@@ -163,17 +163,17 @@ export class BotService {
     } catch (error) {
       console.log('caption error');
       // to send the image and writeups saperately
-      const sendSaperately = async () => {
-        await this.bot.sendPhoto(userId, imageUrl, {
-          parse_mode: `HTML`,
-        });
-        await this.bot.sendMessage(userId, message, {
-          reply_markup: markup,
-        });
-      };
-      console.log(`calling function`);
-      await sendSaperately();
-      return 'done';
+      // const sendSaperately = async () => {
+      //   await this.bot.sendPhoto(userId, imageUrl, {
+      //     parse_mode: `HTML`,
+      //   });
+      //   await this.bot.sendMessage(userId, message, {
+      //     reply_markup: markup,
+      //   });
+      // };
+      // console.log(`calling function`);
+      // await sendSaperately();
+      // return 'done';
     }
   };
 
@@ -808,8 +808,16 @@ export class BotService {
             detailsMessage,
             replyMarkup,
           );
-          console.log(DataSent);
-          return DataSent;
+          if (DataSent === 'done') {
+            return DataSent;
+          } else {
+            await this.bot.sendPhoto(chatId, imageUrl, {
+              parse_mode: `HTML`,
+            });
+            return await this.bot.sendMessage(chatId, detailsMessage, {
+              reply_markup: replyMarkup,
+            });
+          }
         } catch (error) {
           console.log(error);
           return await this.bot.sendMessage(chatId, 'error processing command');
