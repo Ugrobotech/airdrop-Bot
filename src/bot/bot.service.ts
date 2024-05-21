@@ -112,6 +112,7 @@ export class BotService {
   async updateUser(username: string, updateUserDto: Prisma.UserUpdateInput) {
     return await this.databaseService.user.update({
       where: { username },
+
       data: updateUserDto,
     });
   }
@@ -338,7 +339,7 @@ export class BotService {
     try {
       return await this.sendPictureToUser(
         chatId,
-        'https://ibb.co/L1Ps4jx',
+        'https://i.ibb.co/19DC34s/SCAN-Recovered-01.jpg',
         'Welcome👋! to AirdropScanBot @Airdrop_ScanBot, your go-to airdrop scanner! 🚀',
         replyMarkup,
       );
